@@ -1,8 +1,10 @@
-package com.kp.dubbotcc.core.service;
+package com.kp.dubbotcc.core.major;
 
 import com.kp.dubbotcc.commons.utils.Assert;
-import com.kp.dubbotcc.core.ServicePoint;
+import com.kp.dubbotcc.core.TccServicePoint;
 import com.kp.dubbotcc.core.Transaction;
+import com.kp.dubbotcc.core.service.MongoTransactionService;
+import com.kp.dubbotcc.core.service.TransactionService;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,16 +24,11 @@ public enum TransactionManager {
     /**
      * 线程节点
      */
-    private final ThreadLocal<ServicePoint> localPoint = new ThreadLocal<>();
+    private final ThreadLocal<TccServicePoint> localPoint = new ThreadLocal<>();
     /**
      * 事务管理容器
      */
     ConcurrentHashMap<String, Transaction> pools = new ConcurrentHashMap<>();
-    /**
-     * 事务服务
-     */
-    private TransactionService transactionService;
-
     /**
      * 开始事务
      */
@@ -75,15 +72,15 @@ public enum TransactionManager {
     }
 
     public TransactionService getTransactionService() {
-        return transactionService = new TransactionService();
+        return new MongoTransactionService();
     }
 
     /**
      * 获取线程服务节点
      *
-     * @return
+     * @return 本地服务点对象
      */
-    public ServicePoint getServicePoint() {
+    public TccServicePoint getServicePoint() {
         return localPoint.get();
     }
 }

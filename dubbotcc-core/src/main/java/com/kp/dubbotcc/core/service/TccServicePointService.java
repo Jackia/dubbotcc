@@ -3,8 +3,8 @@ package com.kp.dubbotcc.core.service;
 import com.kp.dubbotcc.commons.emuns.ServicePointStatus;
 import com.kp.dubbotcc.commons.exception.TccRuntimeException;
 import com.kp.dubbotcc.commons.utils.Assert;
-import com.kp.dubbotcc.core.ServicePoint;
 import com.kp.dubbotcc.core.TccInvocation;
+import com.kp.dubbotcc.core.TccServicePoint;
 import com.kp.dubbotcc.core.Transaction;
 import com.kp.dubbotcc.core.api.TccRollback;
 import org.apache.commons.lang3.StringUtils;
@@ -59,9 +59,8 @@ public class TccServicePointService {
      * @param rollback      补偿者
      * @return 服务点
      */
-    public ServicePoint generatePoint(String methodName, Transaction transaction, String interfaceName, String url, TccInvocation commit, TccInvocation rollback) {
-        ServicePoint point;
-        point = new ServicePoint.ServicePointBuilder()
+    public TccServicePoint generatePoint(String methodName, Transaction transaction, String interfaceName, String url, TccInvocation commit, TccInvocation rollback) {
+        return new TccServicePoint.ServicePointBuilder()
                 .setCallMethod(methodName)
                 .setCommitInvocation(commit)
                 .setRollbackInvocation(rollback)
@@ -70,6 +69,5 @@ public class TccServicePointService {
                 .setStatus(ServicePointStatus.INIT)
                 .setTransId(transaction.getTransId())
                 .setRoot(true).build();
-        return point;
     }
 }

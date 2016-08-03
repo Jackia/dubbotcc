@@ -1,6 +1,7 @@
-package com.kp.dubbotcc.core.service;
+package com.kp.dubbotcc.core.major;
 
-import com.kp.dubbotcc.core.ServicePoint;
+import com.kp.dubbotcc.core.TccServicePoint;
+import com.kp.dubbotcc.core.service.TccServicePointService;
 
 /**
  * 当前事务调用链
@@ -15,7 +16,7 @@ public class TccServicePointTrace {
      */
     private TccServicePointService service = new TccServicePointService();
 
-    private ServicePoint point;
+    private TccServicePoint point;
 
     public TccServicePointTrace() {
     }
@@ -25,7 +26,7 @@ public class TccServicePointTrace {
      *
      * @param point
      */
-    public TccServicePointTrace(ServicePoint point) {
+    public TccServicePointTrace(TccServicePoint point) {
         this.point = point;
     }
 
@@ -34,7 +35,7 @@ public class TccServicePointTrace {
      *
      * @return
      */
-    public ServicePoint getPoint() {
+    public TccServicePoint getPoint() {
         return point;
     }
 
@@ -43,7 +44,7 @@ public class TccServicePointTrace {
      *
      * @param point
      */
-    public void setPoint(ServicePoint point) {
+    public void setPoint(TccServicePoint point) {
         this.point = point;
     }
 

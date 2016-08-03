@@ -11,7 +11,7 @@ import com.kp.dubbotcc.commons.utils.GenerateUniqueId;
  * @author chenbin
  * @version 1.0
  **/
-public class ServicePoint {
+public class TccServicePoint {
     /**
      * 事务唯一ID
      */
@@ -101,7 +101,7 @@ public class ServicePoint {
         return isRoot;
     }
 
-    private ServicePoint setValue(ServicePointBuilder builder) {
+    private TccServicePoint setValue(ServicePointBuilder builder) {
         this.transId = builder.transId;
         this.parentId = builder.parentId;
         this.callMethod = builder.callMethod;
@@ -213,13 +213,13 @@ public class ServicePoint {
         /**
          * 构建servicePoint
          */
-        public ServicePoint build() {
+        public TccServicePoint build() {
             this.startTime = DateUtils.nowEpochSecond();
             this.pointId = GenerateUniqueId.getInstance().getUniqID();
             if (this.isRoot) {
                 this.parentId = "";
             }
-            return new ServicePoint().setValue(this);
+            return new TccServicePoint().setValue(this);
         }
     }
 }

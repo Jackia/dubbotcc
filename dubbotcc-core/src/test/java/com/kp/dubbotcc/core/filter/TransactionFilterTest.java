@@ -27,7 +27,7 @@ public class TransactionFilterTest {
     public void testEcho() {
         Class clazz[] = {String.class};
         Invocation invocation = Mockito.mock(Invocation.class);
-        Mockito.when(invocation.getMethodName()).thenReturn("$echo");
+        Mockito.when(invocation.getMethodName()).thenReturn("echo");
         Mockito.when(invocation.getParameterTypes()).thenReturn(clazz);
         Mockito.when(invocation.getArguments()).thenReturn(new Object[]{"hello"});
         Mockito.when(invocation.getAttachments()).thenReturn(null);

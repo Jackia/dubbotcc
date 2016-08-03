@@ -8,11 +8,11 @@ import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.dubbo.rpc.RpcException;
-import com.kp.dubbotcc.core.ServicePoint;
 import com.kp.dubbotcc.core.TccInvocation;
+import com.kp.dubbotcc.core.TccServicePoint;
 import com.kp.dubbotcc.core.Transaction;
-import com.kp.dubbotcc.core.service.TccServicePointTrace;
-import com.kp.dubbotcc.core.service.TransactionManager;
+import com.kp.dubbotcc.core.major.TccServicePointTrace;
+import com.kp.dubbotcc.core.major.TransactionManager;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -27,10 +27,9 @@ public class TransactionFilter implements Filter {
     /**
      * 补偿服务实现
      */
-    private TccServicePointTrace trace = null;
+    private TccServicePointTrace trace;
 
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        Result result = null;
         /**
          * 获取相应参数
          */
@@ -45,8 +44,9 @@ public class TransactionFilter implements Filter {
         /**
          * 判断是否存在补偿方法,如果不存在不实行补偿事务
          */
+        Result result = null;
         if (!StringUtils.isBlank(rollbackMethod)) {
-            Transaction transaction = TransactionManager.INSTANCE.begin();//开始事务
+            Transaction transaction =  TransactionManager.INSTANCE.begin();//开始事务;
             /**
              * 构建节点信息
              */
@@ -60,7 +60,7 @@ public class TransactionFilter implements Filter {
              * RPC上下文对象
              */
             RpcContext context = RpcContext.getContext();
-            ServicePoint point = null;//生成当前的调用point
+            TccServicePoint point = null;//生成当前的调用point
             /**
              * 判断调用类型是属于调用方,还是提供方
              */
@@ -68,17 +68,20 @@ public class TransactionFilter implements Filter {
                 /**
                  * 获取事务节点
                  */
-                ServicePoint localPoint = TransactionManager.INSTANCE.getServicePoint();
+                TccServicePoint localPoint = TransactionManager.INSTANCE.getServicePoint();
                 /**
                  * 如果本地不存在线程已执行节点
                  */
-                if (null == localPoint) {
+                if (localPoint == null) {
                     point = trace.getService().generatePoint(methodName, transaction, interfaceName, url, commit, rollback);
                 } else {
                     String transIdExist = localPoint.getTransId();
-                    transaction = TransactionManager.INSTANCE.getTransactionService().getServicePointByTransId(transIdExist);
-                    point = trace.getService().generatePoint(methodName, transaction, interfaceName, url, commit, rollback);
+                    transaction  = TransactionManager.INSTANCE.getTransactionService().getTransactionByTransId(transIdExist);
+                    point = trace.getService().generatePoint(methodName, transaction,interfaceName, url, commit, rollback);
                 }
+                /**
+                 * 如果是提供者
+                 */
             } else if (context.isProviderSide()) {
 
             }

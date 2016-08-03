@@ -32,7 +32,7 @@ public class Transaction implements Serializable {
     /**
      * 需要调用的服务点
      */
-    private List<ServicePoint> points = null;
+    private List<TccServicePoint> points = null;
 
     /**
      * 初始化事务信息
@@ -41,7 +41,7 @@ public class Transaction implements Serializable {
         transId = GenerateUniqueId.getInstance().getUniqIDHashString();
         startTime = DateUtils.nowEpochSecond();
         status = TransactionStatus.BEGIN;
-        points = new CopyOnWriteArrayList<ServicePoint>();
+        points = new CopyOnWriteArrayList<TccServicePoint>();
     }
 
     /**
@@ -86,7 +86,7 @@ public class Transaction implements Serializable {
      *
      * @return 所有服务点信息
      */
-    public List<ServicePoint> getPotins() {
+    public List<TccServicePoint> getPotins() {
         return points;
     }
 
@@ -96,7 +96,7 @@ public class Transaction implements Serializable {
      * @param point 服务点信息
      * @see ServicePoint
      */
-    public void addServicePotin(ServicePoint point) {
+    public void addServicePotin(TccServicePoint point) {
         Assert.notNull(point, "servicePoint is null");
         points.add(point);
     }
