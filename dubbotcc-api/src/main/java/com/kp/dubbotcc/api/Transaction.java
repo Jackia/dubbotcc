@@ -1,4 +1,4 @@
-package com.kp.dubbotcc.core.api;
+package com.kp.dubbotcc.api;
 
 import com.kp.dubbotcc.commons.emuns.TransactionStatus;
 import com.kp.dubbotcc.commons.utils.Assert;
@@ -45,11 +45,10 @@ public class Transaction implements Serializable {
     }
 
     /**
-     *
-     * @param transId 事件号
-     * @param startTime  时间
-     * @param status 状态
-     * @param points 服务点
+     * @param transId   事件号
+     * @param startTime 时间
+     * @param status    状态
+     * @param points    服务点
      */
     public Transaction(String transId, Long startTime, TransactionStatus status, List<TccServicePoint> points) {
         this.points = points;

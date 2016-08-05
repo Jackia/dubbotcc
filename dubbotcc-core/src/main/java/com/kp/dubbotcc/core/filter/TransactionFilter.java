@@ -9,12 +9,13 @@ import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.dubbo.rpc.RpcException;
 import com.alibaba.dubbo.rpc.RpcInvocation;
-import com.kp.dubbotcc.core.api.TccConstants;
-import com.kp.dubbotcc.core.api.TccInvocation;
-import com.kp.dubbotcc.core.api.TccServicePoint;
-import com.kp.dubbotcc.core.api.Transaction;
-import com.kp.dubbotcc.core.major.TccServicePointTrace;
+import com.kp.dubbotcc.api.TccConstants;
+import com.kp.dubbotcc.api.TccInvocation;
+import com.kp.dubbotcc.api.TccServicePoint;
+import com.kp.dubbotcc.api.Transaction;
+import com.kp.dubbotcc.commons.exception.TccRuntimeException;
 import com.kp.dubbotcc.core.major.TransactionManager;
+import com.kp.dubbotcc.core.service.TccServicePointService;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -29,7 +30,7 @@ public class TransactionFilter implements Filter {
     /**
      * 补偿服务跟踪操作
      */
-    private final TccServicePointTrace trace = new TccServicePointTrace();
+    private final TccServicePointService trace = new TccServicePointService();
 
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         /**
@@ -41,7 +42,7 @@ public class TransactionFilter implements Filter {
         /**
          * 获取补偿方法
          */
-        String rollbackMethod = trace.getService().checkTccRollback(serviceType, methodName, args);//获取补偿方法
+        String rollbackMethod = trace.checkTccRollback(serviceType, methodName, args);//获取补偿方法
         /**
          * 判断是否存在补偿方法,如果不存在不实行补偿事务
          */
@@ -116,26 +117,37 @@ public class TransactionFilter implements Filter {
             String transIdExist = transaction.getTransId();
             transaction = TransactionManager.INSTANCE.getTransactionService().getTransactionByTransId(transIdExist);
         }
-        point = trace.getService().generatePoint(methodName, transaction, interfaceName, address, port, commit, rollback);
+        point = trace.generatePoint(methodName, transaction, interfaceName, address, port, commit, rollback);
         transaction.addServicePotin(point);
-        //提交事务
-        commit(transaction, invocation);
-        //执行业务
-        Result result = invoker.invoke(invocation);
-        //事务回滚
-        rollbackCheck(transaction, result, invocation);
+        Result result = null;
+        try {
+            //提交事务
+            commit(transaction, invocation);
+            //执行业务
+            result = invoker.invoke(invocation);
+            //事务回滚
+            rollbackCheck(transaction, result, invocation);
+
+        } catch (RuntimeException ex) {//有运行时异常,则进行事务回滚
+            TransactionManager.INSTANCE.rollback();
+        }
         return result;
     }
 
     /**
-     * 开如事务回滚并调用rollback方法
+     * 检查是否需要回滚事务
      *
      * @param transaction 事务信息
      * @param result      远程调用结果
      * @param invocation  执行器
      */
     private void rollbackCheck(Transaction transaction, Result result, Invocation invocation) {
-
+        /**
+         * 如果执行的方法发生了异常,则需要进行回滚
+         */
+        if (result.hasException() && RuntimeException.class.isAssignableFrom(result.getException().getClass())) {
+            throw new TccRuntimeException(result.getException().getMessage());
+        }
     }
 
     /**

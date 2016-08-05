@@ -2,7 +2,7 @@ package com.kp.dubbotcc.core.serializer;
 
 import com.alibaba.dubbo.common.extension.ExtensionLoader;
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.kp.dubbotcc.core.api.config.TccConfig;
+import com.kp.dubbotcc.core.config.TccConfig;
 import com.kp.dubbotcc.core.spring.BeanUtils;
 
 /**

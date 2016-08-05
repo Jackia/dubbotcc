@@ -1,8 +1,10 @@
-package com.kp.dubbotcc.core.api;
+package com.kp.dubbotcc.api;
 
 import com.kp.dubbotcc.commons.emuns.ServicePointStatus;
 import com.kp.dubbotcc.commons.utils.DateUtils;
 import com.kp.dubbotcc.commons.utils.GenerateUniqueId;
+
+import java.io.Serializable;
 
 /**
  * 服务调用的接口点
@@ -11,7 +13,7 @@ import com.kp.dubbotcc.commons.utils.GenerateUniqueId;
  * @author chenbin
  * @version 1.0
  **/
-public class TccServicePoint {
+public class TccServicePoint implements Serializable {
     /**
      * 事务唯一ID
      */
@@ -127,6 +129,15 @@ public class TccServicePoint {
     }
 
     /**
+     * 修改执行服务点的状态
+     *
+     * @param status 状态
+     */
+    public void modfiyStatus(ServicePointStatus status) {
+        this.status = status;
+    }
+
+    /**
      * 服务构建器
      */
     public static class ServicePointBuilder {
@@ -237,5 +248,21 @@ public class TccServicePoint {
             this.pointId = GenerateUniqueId.getInstance().getUniqID();
             return new TccServicePoint().setValue(this);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TccServicePoint that = (TccServicePoint) o;
+
+        return pointId.equals(that.pointId);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return pointId.hashCode();
     }
 }

@@ -5,7 +5,7 @@ import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.common.utils.StringUtils;
 import com.kp.dubbotcc.commons.exception.TccRuntimeException;
-import com.kp.dubbotcc.core.api.config.TccConfig;
+import com.kp.dubbotcc.core.config.TccConfig;
 import com.kp.dubbotcc.core.cache.TransactionCacheService;
 import com.kp.dubbotcc.core.serializer.SerializerFactory;
 import org.springframework.beans.BeansException;

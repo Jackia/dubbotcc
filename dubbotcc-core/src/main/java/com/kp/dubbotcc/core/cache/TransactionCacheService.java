@@ -42,7 +42,6 @@ public interface TransactionCacheService {
      * @param transId 事务ID
      */
     void remove(String transId);
-
     /**
      * 初始化一下转换器</pr>
      * 适用于KEY/Value结构

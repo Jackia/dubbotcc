@@ -1,4 +1,4 @@
-package com.kp.dubbotcc.core.api;
+package com.kp.dubbotcc.api;
 
 /**
  * 保存系统常量信息

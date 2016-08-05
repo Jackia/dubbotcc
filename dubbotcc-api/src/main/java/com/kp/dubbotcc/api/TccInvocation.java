@@ -1,4 +1,4 @@
-package com.kp.dubbotcc.core.api;
+package com.kp.dubbotcc.api;
 
 import java.io.Serializable;
 

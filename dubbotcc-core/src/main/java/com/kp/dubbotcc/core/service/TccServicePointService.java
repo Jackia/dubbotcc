@@ -1,12 +1,12 @@
 package com.kp.dubbotcc.core.service;
 
+import com.kp.dubbotcc.api.Compensation;
+import com.kp.dubbotcc.api.TccInvocation;
+import com.kp.dubbotcc.api.TccServicePoint;
+import com.kp.dubbotcc.api.Transaction;
 import com.kp.dubbotcc.commons.emuns.ServicePointStatus;
 import com.kp.dubbotcc.commons.exception.TccRuntimeException;
 import com.kp.dubbotcc.commons.utils.Assert;
-import com.kp.dubbotcc.core.api.Compensation;
-import com.kp.dubbotcc.core.api.TccInvocation;
-import com.kp.dubbotcc.core.api.TccServicePoint;
-import com.kp.dubbotcc.core.api.Transaction;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Method;
@@ -73,8 +73,7 @@ public class TccServicePointService {
         if (transaction.getPotins().isEmpty()) {
             isRoot = true;
         } else {
-            int size = transaction.getPotins().size();
-            parentId = transaction.getPotins().get(size - 1).getPointId();
+            parentId = lastPoint(transaction).getParentId();
         }
         return new TccServicePoint.ServicePointBuilder()
                 .setCallMethod(methodName)
@@ -87,5 +86,41 @@ public class TccServicePointService {
                 .setTransId(transaction.getTransId())
                 .setRoot(isRoot)
                 .setParentId(parentId).build();
+    }
+
+    /**
+     * 获取当前事务的最后一个节点
+     *
+     * @param transaction 事务对象
+     * @return 最后一个节点
+     */
+    public TccServicePoint lastPoint(Transaction transaction) {
+        if (transaction == null) {
+            return null;
+        }
+        if (transaction.getPotins() != null || transaction.getPotins().size() <= 0) {
+            return null;
+        }
+        int size = transaction.getPotins().size();
+        return transaction.getPotins().get(size - 1);
+    }
+
+    /**
+     * 修改事务的当前节点的状态信息
+     *
+     * @param transaction 当前事务
+     * @param status      修改的状态
+     * @return 修改后的事务
+     */
+    public Transaction modifyCurrentStatus(Transaction transaction, ServicePointStatus status) {
+        TccServicePoint point = lastPoint(transaction);
+        if (point != null) {
+            transaction.getPotins().stream().forEach(e -> {
+                if (e.equals(point)) {
+                    e.modfiyStatus(status);
+                }
+            });
+        }
+        return transaction;
     }
 }
