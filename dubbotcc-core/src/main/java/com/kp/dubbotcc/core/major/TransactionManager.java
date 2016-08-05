@@ -1,12 +1,9 @@
 package com.kp.dubbotcc.core.major;
 
 import com.kp.dubbotcc.commons.utils.Assert;
-import com.kp.dubbotcc.core.TccServicePoint;
-import com.kp.dubbotcc.core.Transaction;
-import com.kp.dubbotcc.core.service.MongoTransactionService;
+import com.kp.dubbotcc.core.api.Transaction;
 import com.kp.dubbotcc.core.service.TransactionService;
-
-import java.util.concurrent.ConcurrentHashMap;
+import com.kp.dubbotcc.core.service.TransactionServiceAware;
 
 /**
  * 事务管理器
@@ -16,19 +13,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version 1.0
  **/
 public enum TransactionManager {
+
     INSTANCE;
     /**
      * 线程事务
      */
     private final ThreadLocal<Transaction> localTransaction = new ThreadLocal<>();
     /**
-     * 线程节点
+     * 事务存入数据库
      */
-    private final ThreadLocal<TccServicePoint> localPoint = new ThreadLocal<>();
-    /**
-     * 事务管理容器
-     */
-    ConcurrentHashMap<String, Transaction> pools = new ConcurrentHashMap<>();
+    private final TransactionService service = new TransactionServiceAware();
+
     /**
      * 开始事务
      */
@@ -40,26 +35,27 @@ public enum TransactionManager {
             entity = new Transaction();
         }
         localTransaction.set(entity);
+        service.saveTransaction(entity);
         return entity;
     }
 
     /**
      * 提交事务
      */
-    public void commit(TccServicePointTrace trace) {
-        Assert.notNull(trace);
-        Assert.notNull(trace.getPoint());
-        Transaction tran = localTransaction.get();
-        tran.addServicePotin(trace.getPoint());
-        localPoint.set(trace.getPoint());
-        localTransaction.set(tran);
+    public void commit(Transaction transaction) {
+        //表示只有一个节点,在开始事务阶段已提交,则这里不需要提交
+        if (transaction.getPotins().size() <= 1) {
+            return;
+        }
+        Assert.notNull(transaction);
+        localTransaction.set(transaction);//保存线程事务管理
+        service.updateTransaction(transaction);
     }
 
     /**
      * 回滚事务
      */
     public void rollback() {
-
     }
 
     /**
@@ -72,15 +68,6 @@ public enum TransactionManager {
     }
 
     public TransactionService getTransactionService() {
-        return new MongoTransactionService();
-    }
-
-    /**
-     * 获取线程服务节点
-     *
-     * @return 本地服务点对象
-     */
-    public TccServicePoint getServicePoint() {
-        return localPoint.get();
+        return service;
     }
 }

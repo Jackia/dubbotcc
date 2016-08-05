@@ -8,9 +8,11 @@ import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.dubbo.rpc.RpcException;
-import com.kp.dubbotcc.core.TccInvocation;
-import com.kp.dubbotcc.core.TccServicePoint;
-import com.kp.dubbotcc.core.Transaction;
+import com.alibaba.dubbo.rpc.RpcInvocation;
+import com.kp.dubbotcc.core.api.TccConstants;
+import com.kp.dubbotcc.core.api.TccInvocation;
+import com.kp.dubbotcc.core.api.TccServicePoint;
+import com.kp.dubbotcc.core.api.Transaction;
 import com.kp.dubbotcc.core.major.TccServicePointTrace;
 import com.kp.dubbotcc.core.major.TransactionManager;
 import org.apache.commons.lang3.StringUtils;
@@ -25,9 +27,9 @@ import org.apache.commons.lang3.StringUtils;
 @Activate(group = {Constants.SERVER_KEY, Constants.CONSUMER})
 public class TransactionFilter implements Filter {
     /**
-     * 补偿服务实现
+     * 补偿服务跟踪操作
      */
-    private TccServicePointTrace trace;
+    private final TccServicePointTrace trace = new TccServicePointTrace();
 
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         /**
@@ -39,58 +41,110 @@ public class TransactionFilter implements Filter {
         /**
          * 获取补偿方法
          */
-        trace = new TccServicePointTrace();
         String rollbackMethod = trace.getService().checkTccRollback(serviceType, methodName, args);//获取补偿方法
         /**
          * 判断是否存在补偿方法,如果不存在不实行补偿事务
          */
         Result result = null;
         if (!StringUtils.isBlank(rollbackMethod)) {
-            Transaction transaction =  TransactionManager.INSTANCE.begin();//开始事务;
-            /**
-             * 构建节点信息
-             */
-            String interfaceName = invoker.getInterface().getName();
-            String url = invoker.getUrl().toFullString();
-            Object[] Arguments = invocation.getArguments();
-            //封装调用节点
-            TccInvocation commit = new TccInvocation(serviceType, methodName, Arguments, args);
-            TccInvocation rollback = new TccInvocation(serviceType, rollbackMethod, Arguments, args);
             /**
              * RPC上下文对象
              */
             RpcContext context = RpcContext.getContext();
-            TccServicePoint point = null;//生成当前的调用point
             /**
              * 判断调用类型是属于调用方,还是提供方
              */
             if (context.isConsumerSide()) {
-                /**
-                 * 获取事务节点
-                 */
-                TccServicePoint localPoint = TransactionManager.INSTANCE.getServicePoint();
-                /**
-                 * 如果本地不存在线程已执行节点
-                 */
-                if (localPoint == null) {
-                    point = trace.getService().generatePoint(methodName, transaction, interfaceName, url, commit, rollback);
-                } else {
-                    String transIdExist = localPoint.getTransId();
-                    transaction  = TransactionManager.INSTANCE.getTransactionService().getTransactionByTransId(transIdExist);
-                    point = trace.getService().generatePoint(methodName, transaction,interfaceName, url, commit, rollback);
-                }
+                return consumeSide(invoker, invocation, rollbackMethod);
                 /**
                  * 如果是提供者
                  */
             } else if (context.isProviderSide()) {
-
+                return providerSide(invoker, invocation, rollbackMethod);
             }
-            //提交事务
-            trace.setPoint(point);
-            TransactionManager.INSTANCE.commit(trace);
         } else {
             result = invoker.invoke(invocation);
         }
         return result;
+    }
+
+    /**
+     * 服务提供方法事务管理实现
+     *
+     * @param invoker
+     * @param invocation
+     * @param rollbackMethod
+     * @return
+     */
+    private Result providerSide(Invoker<?> invoker, Invocation invocation, String rollbackMethod) {
+        return invoker.invoke(invocation);
+    }
+
+    /**
+     * 服务调用方法事务管理实现
+     *
+     * @param invoker
+     * @param invocation
+     * @param rollbackMethod
+     * @return
+     */
+    private Result consumeSide(Invoker<?> invoker, Invocation invocation, String rollbackMethod) {
+        Transaction transaction;
+        String methodName = invocation.getMethodName();
+        Class serviceType = invoker.getInterface();
+        Class[] args = invocation.getParameterTypes();
+        /**
+         * 构建节点信息
+         */
+        String interfaceName = invoker.getInterface().getName();
+        String address = RpcContext.getContext().getLocalAddressString();
+        int port = RpcContext.getContext().getLocalPort();
+        Object[] Arguments = invocation.getArguments();
+        //封装调用节点
+        TccInvocation commit = new TccInvocation(serviceType, methodName, Arguments, args);
+        TccInvocation rollback = new TccInvocation(serviceType, rollbackMethod, Arguments, args);
+        TccServicePoint point; /**
+         * 获取事务节点
+         */
+        transaction = TransactionManager.INSTANCE.getTransaction();
+        /**
+         * 如果本地不存在线程已执行节点
+         */
+        if (transaction == null) {
+            transaction = TransactionManager.INSTANCE.begin();//开始事务;
+        } else {
+            String transIdExist = transaction.getTransId();
+            transaction = TransactionManager.INSTANCE.getTransactionService().getTransactionByTransId(transIdExist);
+        }
+        point = trace.getService().generatePoint(methodName, transaction, interfaceName, address, port, commit, rollback);
+        transaction.addServicePotin(point);
+        //提交事务
+        commit(transaction, invocation);
+        //执行业务
+        Result result = invoker.invoke(invocation);
+        //事务回滚
+        rollbackCheck(transaction, result, invocation);
+        return result;
+    }
+
+    /**
+     * 开如事务回滚并调用rollback方法
+     *
+     * @param transaction 事务信息
+     * @param result      远程调用结果
+     * @param invocation  执行器
+     */
+    private void rollbackCheck(Transaction transaction, Result result, Invocation invocation) {
+
+    }
+
+    /**
+     * 事务提交前的操作
+     */
+    private void commit(Transaction transaction, Invocation invocation) {
+        //提交事务
+        RpcInvocation invocation1 = (RpcInvocation) invocation;
+        invocation1.setAttachment(TccConstants.TRANS_ID, transaction.getTransId());
+        TransactionManager.INSTANCE.commit(transaction);
     }
 }

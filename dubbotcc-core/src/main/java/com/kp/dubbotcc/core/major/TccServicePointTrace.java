@@ -1,6 +1,6 @@
 package com.kp.dubbotcc.core.major;
 
-import com.kp.dubbotcc.core.TccServicePoint;
+import com.kp.dubbotcc.core.api.TccServicePoint;
 import com.kp.dubbotcc.core.service.TccServicePointService;
 
 /**

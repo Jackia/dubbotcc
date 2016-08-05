@@ -1,0 +1,39 @@
+/*
+ * Copyright (c) 2016.
+ * kupats(sz)
+ * www.kuparts.com.
+ * Created By chenbin on 16-6-14 上午10:48.
+ */
+
+package com.kp.dubbotcc.core.serializer;
+
+import com.alibaba.dubbo.common.extension.SPI;
+import com.kp.dubbotcc.commons.exception.TccExecption;
+
+/**
+ * 对象序列化父类
+ *
+ * @author chenbin@kuparts.com
+ * @author chenbin
+ * @version 1.0
+ **/
+@SPI("kryo")
+public interface ObjectSerializer {
+    /**
+     * 序列化对象
+     *
+     * @param obj 需要序更列化的对象
+     * @return byte []
+     * @throws TccExecption
+     */
+    byte[] serialize(Object obj) throws TccExecption;
+
+    /**
+     * 反序列化对象
+     *
+     * @param param 需要反序列化的byte []
+     * @return 对象
+     * @throws TccExecption
+     */
+    <T> T deSerialize(byte[] param, Class<T> clazz) throws TccExecption;
+}
