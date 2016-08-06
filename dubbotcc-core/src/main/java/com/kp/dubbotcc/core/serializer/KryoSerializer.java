@@ -10,7 +10,7 @@ package com.kp.dubbotcc.core.serializer;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.kp.dubbotcc.commons.exception.TccExecption;
+import com.kp.dubbotcc.commons.exception.TccException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,10 +29,10 @@ public class KryoSerializer implements ObjectSerializer {
      *
      * @param obj 需要序更列化的对象
      * @return
-     * @throws TccExecption
+     * @throws TccException
      */
     @Override
-    public byte[] serialize(Object obj) throws TccExecption {
+    public byte[] serialize(Object obj) throws TccException {
         byte[] bytes = null;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
@@ -43,7 +43,7 @@ public class KryoSerializer implements ObjectSerializer {
             bytes = output.toBytes();
             output.flush();
         } catch (Exception ex) {
-            throw new TccExecption("kryo serialize error" + ex.getMessage());
+            throw new TccException("kryo serialize error" + ex.getMessage());
         }finally {
             try {
                 outputStream.flush();
@@ -60,10 +60,10 @@ public class KryoSerializer implements ObjectSerializer {
      *
      * @param param 需要反序列化的byte []
      * @return
-     * @throws TccExecption
+     * @throws TccException
      */
     @Override
-    public <T> T deSerialize(byte[] param,Class<T> clazz) throws TccExecption {
+    public <T> T deSerialize(byte[] param,Class<T> clazz) throws TccException {
         T object = null;
         ByteArrayInputStream inputStream = new ByteArrayInputStream(param);
         try {
@@ -73,7 +73,7 @@ public class KryoSerializer implements ObjectSerializer {
             object = kryo.readObject(input,clazz);
             input.close();
         }catch (Exception e){
-            throw new TccExecption("kryo deSerialize error" + e.getMessage());
+            throw new TccException("kryo deSerialize error" + e.getMessage());
         }finally {
             try {
                 inputStream.close();

@@ -33,6 +33,7 @@ public class TransactionFilter implements Filter {
     private final TccServicePointService trace = new TccServicePointService();
 
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+        invoker.getUrl().getIp();
         /**
          * 获取相应参数
          */
@@ -64,7 +65,14 @@ public class TransactionFilter implements Filter {
                 return providerSide(invoker, invocation, rollbackMethod);
             }
         } else {
-            result = invoker.invoke(invocation);
+            try {
+                result = invoker.invoke(invocation);
+            } catch (RuntimeException e) {
+                if (StringUtils.isBlank(rollbackMethod)) {//当前调用的方法没有补偿方法
+                    TransactionManager.INSTANCE.rollback();
+                }
+            }
+
         }
         return result;
     }
@@ -117,7 +125,7 @@ public class TransactionFilter implements Filter {
             String transIdExist = transaction.getTransId();
             transaction = TransactionManager.INSTANCE.getTransactionService().getTransactionByTransId(transIdExist);
         }
-        point = trace.generatePoint(methodName, transaction, interfaceName, address, port, commit, rollback);
+        point = trace.generatePoint(transaction, interfaceName, address, port, invoker.getUrl(), commit, rollback);
         transaction.addServicePotin(point);
         Result result = null;
         try {
@@ -145,8 +153,10 @@ public class TransactionFilter implements Filter {
         /**
          * 如果执行的方法发生了异常,则需要进行回滚
          */
-        if (result.hasException() && RuntimeException.class.isAssignableFrom(result.getException().getClass())) {
-            throw new TccRuntimeException(result.getException().getMessage());
+        if (result != null) {
+            if (result.hasException() && RuntimeException.class.isAssignableFrom(result.getException().getClass())) {
+                throw new TccRuntimeException(result.getException().getMessage());
+            }
         }
     }
 

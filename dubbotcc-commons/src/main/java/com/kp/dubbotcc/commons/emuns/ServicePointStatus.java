@@ -10,5 +10,5 @@ package com.kp.dubbotcc.commons.emuns;
 public enum ServicePointStatus {
     INIT,//初始化
     SUCCESS, //执行成功
-    FAILURE; //失败
+    FAILURE //失败
 }

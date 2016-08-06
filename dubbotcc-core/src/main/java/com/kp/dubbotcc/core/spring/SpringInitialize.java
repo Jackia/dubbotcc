@@ -5,17 +5,16 @@ import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.common.utils.StringUtils;
 import com.kp.dubbotcc.commons.exception.TccRuntimeException;
-import com.kp.dubbotcc.core.config.TccConfig;
 import com.kp.dubbotcc.core.cache.TransactionCacheService;
+import com.kp.dubbotcc.core.config.ApplicationConfigCache;
+import com.kp.dubbotcc.core.config.TccConfig;
+import com.kp.dubbotcc.core.rollback.RollbackService;
 import com.kp.dubbotcc.core.serializer.SerializerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 
 /**
  * 通过Spring初始化一些基本信息
@@ -24,7 +23,6 @@ import javax.annotation.PostConstruct;
  * @author chenbin
  * @version 1.0
  **/
-@Component
 public class SpringInitialize implements ApplicationContextAware {
     private static final Logger LOG = LoggerFactory.getLogger(SpringInitialize.class);
     /**
@@ -34,26 +32,25 @@ public class SpringInitialize implements ApplicationContextAware {
     /**
      * 事务配置一些基本信息
      */
-    private TccConfig config;
+    private TccConfig tccConfig;
 
-    public void setConfig(TccConfig config) {
-        this.config = config;
+    public void setTccConfig(TccConfig tccConfig) {
+        this.tccConfig = tccConfig;
+    }
+
+    public TccConfig getTccConfig() {
+        return tccConfig;
     }
 
     /**
      * 初始Spring信息
      */
-    @PostConstruct
     public void init() {
-        //判断是否存在这个bean信息
-        boolean flag = beanUtils.exitsBean(TccConfig.class);
-        if (!flag) {
-            TccBeanDefinition definition = new TccBeanDefinition();
-            definition.setBeanClass(TccConfig.class);
-            beanUtils.registerBean("tccConfig", definition);
-        }
         //初始化使用bean
         SerializerFactory.initFactory();
+        //初始化ApplicationConfig
+        ApplicationConfigCache.getInstance().load();
+        //启动回滚队列
     }
 
     /**
@@ -64,16 +61,28 @@ public class SpringInitialize implements ApplicationContextAware {
     @Bean(name = "tcccache", autowire = Autowire.BY_TYPE)
     public TransactionCacheService getCacheBean() {
         TransactionCacheService service;
-        if (config == null || StringUtils.isBlank(config.getCache())) {
+        if (tccConfig == null || StringUtils.isBlank(tccConfig.getCache())) {
             service = ExtensionLoader.getExtensionLoader(TransactionCacheService.class).getDefaultExtension();
         } else {
-            service = ExtensionLoader.getExtensionLoader(TransactionCacheService.class).getExtension(config.getCache());
+            service = ExtensionLoader.getExtensionLoader(TransactionCacheService.class).getExtension(tccConfig.getCache());
             if (service == null) {
                 LOG.error("没有加载到缓存对象..cache is null", new TccRuntimeException());
                 throw new TccRuntimeException("没有加载到缓存对象..cache is null");
             }
         }
         return service;
+    }
+
+    /**
+     * 启动回滚队列
+     *
+     * @return
+     */
+    @Bean(name = "rollback", autowire = Autowire.BY_TYPE)
+    public RollbackService getRollbackService() {
+        RollbackService rollbackService = new RollbackService();
+        rollbackService.listerQueue();
+        return rollbackService;
     }
 
     @Override

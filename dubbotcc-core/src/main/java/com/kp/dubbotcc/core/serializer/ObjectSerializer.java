@@ -8,7 +8,7 @@
 package com.kp.dubbotcc.core.serializer;
 
 import com.alibaba.dubbo.common.extension.SPI;
-import com.kp.dubbotcc.commons.exception.TccExecption;
+import com.kp.dubbotcc.commons.exception.TccException;
 
 /**
  * 对象序列化父类
@@ -24,16 +24,16 @@ public interface ObjectSerializer {
      *
      * @param obj 需要序更列化的对象
      * @return byte []
-     * @throws TccExecption
+     * @throws TccException
      */
-    byte[] serialize(Object obj) throws TccExecption;
+    byte[] serialize(Object obj) throws TccException;
 
     /**
      * 反序列化对象
      *
      * @param param 需要反序列化的byte []
      * @return 对象
-     * @throws TccExecption
+     * @throws TccException
      */
-    <T> T deSerialize(byte[] param, Class<T> clazz) throws TccExecption;
+    <T> T deSerialize(byte[] param, Class<T> clazz) throws TccException;
 }

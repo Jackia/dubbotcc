@@ -2,7 +2,7 @@ package com.kp.dubbotcc.core.cache.mongo;
 
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
-import com.kp.dubbotcc.commons.exception.TccExecption;
+import com.kp.dubbotcc.commons.exception.TccException;
 import com.kp.dubbotcc.commons.utils.Assert;
 import com.kp.dubbotcc.core.cache.TransactionCacheService;
 import com.kp.dubbotcc.core.cache.TransactionConverter;
@@ -37,8 +37,8 @@ public class MongoTransactionCacheService implements TransactionCacheService {
         MongoTransactionCache cache = null;
         try {
             cache = (MongoTransactionCache) convert.get().convertToCache();
-        } catch (TccExecption tccExecption) {
-            LOG.error(tccExecption.getCause());
+        } catch (TccException tccException) {
+            LOG.error(tccException.getCause());
         }
         template.save(cache, COLLECTION_NAME);
     }
@@ -49,15 +49,15 @@ public class MongoTransactionCacheService implements TransactionCacheService {
         MongoTransactionCache cache = null;
         try {
             cache = (MongoTransactionCache) convert.get().convertToCache();
-        } catch (TccExecption tccExecption) {
-            LOG.error(tccExecption.getCause());
+        } catch (TccException tccException) {
+            LOG.error(tccException.getCause());
         }
         Query query = new Query();
         query.addCriteria(new Criteria("transId").is(cache.getTransId()));
         Update update = new Update();
         update.set("transId", cache.getTransId());
         update.set("status", cache.getStatus());
-        update.set("points", cache.getContents());
+        update.set("contents", cache.getContents());
         update.set("startTime", cache.getStartTime());
         template.updateFirst(query, update, MongoTransactionCache.class, COLLECTION_NAME);
     }

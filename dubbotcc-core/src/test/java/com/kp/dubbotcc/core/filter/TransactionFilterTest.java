@@ -1,6 +1,7 @@
 package com.kp.dubbotcc.core.filter;
 
 import com.alibaba.dubbo.common.URL;
+import com.alibaba.dubbo.config.ReferenceConfig;
 import com.alibaba.dubbo.rpc.Filter;
 import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Invoker;
@@ -11,8 +12,6 @@ import com.kp.dubbotcc.core.support.DemoService;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
-
-import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
@@ -53,4 +52,11 @@ public class TransactionFilterTest {
         assertEquals("hello", filterResult.getValue());
     }
 
+    @Test
+    public void getConfig() {
+        String url = "dubbo://localhost:20924/com.kp.facade.auth.service.ResourceService?application=kp-service-api-c&check=false&dubbo=2.8.4&group=auth&interface=com.kp.facade.auth.service.ResourceService&logger=slf4j&methods=validateMethod,tccValidateMethod,validateAll,validateScope,validateLogin&pid=200420&retries=0&revision=0.0.1&side=consumer&timestamp=1470466885203&version=0.0.1";
+        ReferenceConfig reference = new ReferenceConfig();
+        reference.setUrl(url);
+        reference.get();
+    }
 }

@@ -9,7 +9,7 @@ import com.kp.dubbotcc.api.Transaction;
  * @author chenbin
  * @version 1.0
  **/
-public class ClearCacheCommand implements Command{
+public class ClearCacheAction implements Action {
     @Override
     public boolean execute(Transaction transaction) {
         return false;

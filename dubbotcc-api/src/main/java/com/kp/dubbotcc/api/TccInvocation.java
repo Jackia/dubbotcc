@@ -27,6 +27,9 @@ public class TccInvocation implements Serializable {
      */
     private Class[] argumentTypes;
 
+    public TccInvocation() {
+    }
+
     public TccInvocation(Class targetClazz, String method, Object[] argumentValues, Class[] argumentTypes) {
         this.targetClazz = targetClazz;
         this.method = method;

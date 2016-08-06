@@ -7,19 +7,19 @@ package com.kp.dubbotcc.commons.exception;
  * @author chenbin
  * @version 1.0
  **/
-public class TccExecption extends Exception {
-    public TccExecption() {
+public class TccException extends Exception {
+    public TccException() {
     }
 
-    public TccExecption(String message) {
+    public TccException(String message) {
         super(message);
     }
 
-    public TccExecption(String message, Throwable cause) {
+    public TccException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public TccExecption(Throwable cause) {
+    public TccException(Throwable cause) {
         super(cause);
     }
 }

@@ -39,10 +39,6 @@ public class TccServicePoint implements Serializable {
      */
     private String serviceName;
     /**
-     * 调用的方法名
-     */
-    private String callMethod;
-    /**
      * 本地服务地址
      */
     private String address;
@@ -62,6 +58,30 @@ public class TccServicePoint implements Serializable {
      * 是否为根事务
      */
     private boolean isRoot;
+    /**
+     * 分组
+     */
+    private String group;
+    /**
+     * 版本号
+     */
+    private String version;
+    /**
+     * 远程服务IP
+     */
+    private String remoteAddress;
+
+    public String getRemoteAddress() {
+        return remoteAddress;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public String getVersion() {
+        return version;
+    }
 
     public String getTransId() {
         return transId;
@@ -87,10 +107,6 @@ public class TccServicePoint implements Serializable {
         return serviceName;
     }
 
-    public String getCallMethod() {
-        return callMethod;
-    }
-
     public String getAddress() {
         return address;
     }
@@ -114,9 +130,7 @@ public class TccServicePoint implements Serializable {
     private TccServicePoint setValue(ServicePointBuilder builder) {
         this.transId = builder.transId;
         this.parentId = builder.parentId;
-        this.callMethod = builder.callMethod;
         this.commitInvocation = builder.commitInvocation;
-        this.callMethod = builder.callMethod;
         this.pointId = builder.pointId;
         this.isRoot = builder.isRoot;
         this.rollbackInvocation = builder.rollbackInvocation;
@@ -125,6 +139,9 @@ public class TccServicePoint implements Serializable {
         this.address = builder.address;
         this.port = builder.port;
         this.status = builder.status;
+        this.version = builder.version;
+        this.group = builder.group;
+        this.remoteAddress = builder.remoteAddress;
         return this;
     }
 
@@ -133,7 +150,7 @@ public class TccServicePoint implements Serializable {
      *
      * @param status 状态
      */
-    public void modfiyStatus(ServicePointStatus status) {
+    public void modifyStatus(ServicePointStatus status) {
         this.status = status;
     }
 
@@ -166,13 +183,13 @@ public class TccServicePoint implements Serializable {
          */
         private String serviceName;
         /**
-         * 调用的方法名
-         */
-        private String callMethod;
-        /**
          * 本地服务地址
          */
         private String address;
+        /**
+         * 远程服务IP
+         */
+        private String remoteAddress;
         /**
          * 端口
          */
@@ -186,9 +203,22 @@ public class TccServicePoint implements Serializable {
          */
         private TccInvocation rollbackInvocation;
         /**
+         * 版本号
+         */
+        private String version;
+        /**
          * 是否为根事务
          */
         private boolean isRoot;
+        /**
+         * 分组
+         */
+        public String group;
+
+        public ServicePointBuilder setVersion(String version) {
+            this.version = version;
+            return this;
+        }
 
         public ServicePointBuilder setTransId(String transId) {
             this.transId = transId;
@@ -205,8 +235,8 @@ public class TccServicePoint implements Serializable {
             return this;
         }
 
-        public ServicePointBuilder setCallMethod(String callMethod) {
-            this.callMethod = callMethod;
+        public ServicePointBuilder setGroup(String group) {
+            this.group = group;
             return this;
         }
 
@@ -240,12 +270,17 @@ public class TccServicePoint implements Serializable {
             return this;
         }
 
+        public ServicePointBuilder setRemoteAddress(String remoteAddress) {
+            this.remoteAddress = remoteAddress;
+            return this;
+        }
+
         /**
          * 构建servicePoint
          */
         public TccServicePoint build() {
             this.startTime = DateUtils.nowEpochSecond();
-            this.pointId = GenerateUniqueId.getInstance().getUniqID();
+            this.pointId = GenerateUniqueId.getInstance().getUniqIDHashString();
             return new TccServicePoint().setValue(this);
         }
     }

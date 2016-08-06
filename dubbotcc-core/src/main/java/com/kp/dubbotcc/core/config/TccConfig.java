@@ -1,5 +1,7 @@
 package com.kp.dubbotcc.core.config;
 
+import com.kp.dubbotcc.api.CompensationCallback;
+
 import java.io.Serializable;
 
 /**
@@ -19,9 +21,9 @@ public class TccConfig implements Serializable {
      */
     private String cache;
     /**
-     * 使用的表名
+     * 补偿方法结果回调
      */
-    private String tableName;
+    private transient CompensationCallback callback;
 
     public String getSerializer() {
         return serializer;
@@ -39,11 +41,11 @@ public class TccConfig implements Serializable {
         this.cache = cache;
     }
 
-    public String getTableName() {
-        return tableName;
+    public void setCallback(CompensationCallback callback) {
+        this.callback = callback;
     }
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
+    public CompensationCallback getCallback() {
+        return callback;
     }
 }

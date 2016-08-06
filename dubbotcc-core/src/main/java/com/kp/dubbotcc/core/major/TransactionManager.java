@@ -6,9 +6,11 @@ import com.kp.dubbotcc.api.Transaction;
 import com.kp.dubbotcc.commons.emuns.ServicePointStatus;
 import com.kp.dubbotcc.commons.emuns.TransactionStatus;
 import com.kp.dubbotcc.commons.utils.Assert;
+import com.kp.dubbotcc.core.rollback.RollbackService;
 import com.kp.dubbotcc.core.service.TccServicePointService;
 import com.kp.dubbotcc.core.service.TransactionService;
 import com.kp.dubbotcc.core.service.TransactionServiceAware;
+import com.kp.dubbotcc.core.spring.BeanUtils;
 
 /**
  * 事务管理器
@@ -47,7 +49,7 @@ public enum TransactionManager {
         }
         localTransaction.set(entity);
         service.saveTransaction(entity);
-        LOG.debug("begin transaction :" + entity.getTransId() + "  service:" + tccService.lastPoint(entity).getCallMethod());
+        LOG.debug("begin transaction :" + entity.getTransId());
         return entity;
     }
 
@@ -55,16 +57,12 @@ public enum TransactionManager {
      * 提交事务
      */
     public void commit(Transaction transaction) {
-        //表示只有一个节点,在开始事务阶段已提交,则这里不需要提交
-        if (transaction.getPotins().size() <= 1) {
-            return;
-        }
         Assert.notNull(transaction);
         transaction.modifyStatus(TransactionStatus.COMMIT);//事务状态
         tccService.modifyCurrentStatus(transaction, ServicePointStatus.SUCCESS);//节点状态
         localTransaction.set(transaction);//保存线程事务管理
         service.updateTransaction(transaction);
-        LOG.debug("commit transaction :" + transaction.getTransId() + "  service:" + tccService.lastPoint(transaction).getCallMethod());
+        LOG.debug("commit transaction :" + transaction.getTransId());
     }
 
     /**
@@ -72,10 +70,15 @@ public enum TransactionManager {
      */
     public void rollback() {
         Transaction transaction = localTransaction.get();
+        if (transaction == null) {
+            return;
+        }
         transaction.modifyStatus(TransactionStatus.ROLLBACK);
         tccService.modifyCurrentStatus(transaction, ServicePointStatus.FAILURE);//节点状态
-        LOG.debug("rollback transaction :" + transaction.getTransId() + "  service:" + tccService.lastPoint(transaction).getCallMethod());
+        BeanUtils.getInstance().getBean(RollbackService.class).submit(transaction);
+        LOG.debug("submit rollback transaction :" + transaction.getTransId());
     }
+
     /**
      * 获取当前的事务管理
      *

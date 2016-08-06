@@ -1,7 +1,7 @@
 package com.kp.dubbotcc.core.cache;
 
 import com.kp.dubbotcc.api.Transaction;
-import com.kp.dubbotcc.commons.exception.TccExecption;
+import com.kp.dubbotcc.commons.exception.TccException;
 
 /**
  * 实现一个默认转换器..
@@ -13,7 +13,7 @@ import com.kp.dubbotcc.commons.exception.TccExecption;
  **/
 public class DefaultTransactionConverter extends TransactionConverter<TransactionCache> {
     @Override
-    public TransactionCache convertToCache() throws TccExecption {
+    public TransactionCache convertToCache() throws TccException {
         TransactionCache cache = new TransactionCache();
         cache.setTransId(this.getTransaction().getTransId());
         byte[] bytes = this.getSerializer().serialize(this.getTransaction());
@@ -22,7 +22,7 @@ public class DefaultTransactionConverter extends TransactionConverter<Transactio
     }
 
     @Override
-    public Transaction convertByCache() throws TccExecption {
+    public Transaction convertByCache() throws TccException {
         return this.getSerializer().deSerialize(this.getTransactionCache().getContents(), Transaction.class);
     }
 }

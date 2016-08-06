@@ -8,7 +8,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * SpringBean管理操作
@@ -19,16 +19,28 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
  **/
 public class BeanUtils {
     private static final Logger LOG = LoggerFactory.getLogger(BeanUtils.class);
-    private ConfigurableWebApplicationContext cfgContext;
+    private ConfigurableApplicationContext cfgContext;
     /**
      * 实体对象
      */
     private final static BeanUtils INSTANCE = new BeanUtils();
 
+
     private BeanUtils() {
+        if (INSTANCE != null) {
+            throw new Error("error");
+        }
     }
 
     public static BeanUtils getInstance() {
+        return INSTANCE;
+    }
+
+    /**
+     * 防止序列化产生对象
+     * @return
+     */
+    private Object readResolve() {
         return INSTANCE;
     }
 
@@ -75,6 +87,6 @@ public class BeanUtils {
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        cfgContext = (ConfigurableWebApplicationContext) applicationContext;
+        cfgContext = (ConfigurableApplicationContext) applicationContext;
     }
 }

@@ -2,7 +2,7 @@ package com.kp.dubbotcc.core.cache;
 
 
 import com.kp.dubbotcc.api.Transaction;
-import com.kp.dubbotcc.commons.exception.TccExecption;
+import com.kp.dubbotcc.commons.exception.TccException;
 import com.kp.dubbotcc.core.serializer.ObjectSerializer;
 import com.kp.dubbotcc.core.serializer.SerializerFactory;
 
@@ -35,9 +35,9 @@ public abstract class TransactionConverter<C extends TransactionCache> {
      *
      * @return
      */
-    public abstract C convertToCache() throws TccExecption;
+    public abstract C convertToCache() throws TccException;
 
-    public abstract Transaction convertByCache() throws TccExecption;
+    public abstract Transaction convertByCache() throws TccException;
 
     /**
      * 初始化转换信息

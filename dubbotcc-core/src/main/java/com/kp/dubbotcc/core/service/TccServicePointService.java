@@ -1,6 +1,8 @@
 package com.kp.dubbotcc.core.service;
 
+import com.alibaba.dubbo.common.URL;
 import com.kp.dubbotcc.api.Compensation;
+import com.kp.dubbotcc.api.TccConstants;
 import com.kp.dubbotcc.api.TccInvocation;
 import com.kp.dubbotcc.api.TccServicePoint;
 import com.kp.dubbotcc.api.Transaction;
@@ -38,7 +40,7 @@ public class TccServicePointService {
             if (rollback != null) {
                 String value = rollback.value();
                 if (StringUtils.isBlank(value)) {
-                    return "tcc" + methodName;
+                    return "";
                 }
                 return value;
             }
@@ -51,20 +53,20 @@ public class TccServicePointService {
     /**
      * 生成服务点
      *
-     * @param methodName    方法名
      * @param transaction   事务
      * @param interfaceName 接口名
      * @param address       本地服务地址
      * @param port          本地服务端口
      * @param commit        提交者
      * @param rollback      补偿者
+     * @param url           地址
      * @return 服务点
      */
-    public TccServicePoint generatePoint(String methodName,
-                                         Transaction transaction,
+    public TccServicePoint generatePoint(Transaction transaction,
                                          String interfaceName,
                                          String address,
                                          int port,
+                                         URL url,
                                          TccInvocation commit,
                                          TccInvocation rollback) {
         //是否为你节点
@@ -75,8 +77,10 @@ public class TccServicePointService {
         } else {
             parentId = lastPoint(transaction).getParentId();
         }
+        String version = url.getParameter(TccConstants.VERSION);
+        String group = url.getParameter(TccConstants.GROUP);
         return new TccServicePoint.ServicePointBuilder()
-                .setCallMethod(methodName)
+                .setGroup(group)
                 .setCommitInvocation(commit)
                 .setRollbackInvocation(rollback)
                 .setServiceName(interfaceName)
@@ -85,6 +89,8 @@ public class TccServicePointService {
                 .setStatus(ServicePointStatus.INIT)
                 .setTransId(transaction.getTransId())
                 .setRoot(isRoot)
+                .setVersion(version)
+                .setRemoteAddress(url.getAddress())
                 .setParentId(parentId).build();
     }
 
@@ -98,7 +104,7 @@ public class TccServicePointService {
         if (transaction == null) {
             return null;
         }
-        if (transaction.getPotins() != null || transaction.getPotins().size() <= 0) {
+        if (transaction.getPotins() == null || transaction.getPotins().size() <= 0) {
             return null;
         }
         int size = transaction.getPotins().size();
@@ -115,11 +121,7 @@ public class TccServicePointService {
     public Transaction modifyCurrentStatus(Transaction transaction, ServicePointStatus status) {
         TccServicePoint point = lastPoint(transaction);
         if (point != null) {
-            transaction.getPotins().stream().forEach(e -> {
-                if (e.equals(point)) {
-                    e.modfiyStatus(status);
-                }
-            });
+            point.modifyStatus(status);
         }
         return transaction;
     }

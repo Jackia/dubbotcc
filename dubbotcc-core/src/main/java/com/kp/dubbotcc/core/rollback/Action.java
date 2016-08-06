@@ -9,12 +9,12 @@ import com.kp.dubbotcc.api.Transaction;
  * @author chenbin
  * @version 1.0
  **/
-public interface Command {
+public interface Action {
     /**
      * 封装不同的命令执行器
      *
      * @param transaction 事务
-     * @return 成功 true 失败 false
+     * @return 成功 true 失入
      */
     boolean execute(Transaction transaction);
 }

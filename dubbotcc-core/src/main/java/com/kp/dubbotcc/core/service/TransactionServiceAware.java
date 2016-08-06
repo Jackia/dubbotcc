@@ -3,7 +3,7 @@ package com.kp.dubbotcc.core.service;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.kp.dubbotcc.api.Transaction;
-import com.kp.dubbotcc.commons.exception.TccExecption;
+import com.kp.dubbotcc.commons.exception.TccException;
 import com.kp.dubbotcc.commons.exception.TccRuntimeException;
 import com.kp.dubbotcc.commons.utils.Assert;
 import com.kp.dubbotcc.core.cache.TransactionCacheService;
@@ -43,9 +43,9 @@ public class TransactionServiceAware implements TransactionService {
         Transaction transaction = null;
         try {
             transaction = supplier.get().convertByCache();
-        } catch (TccExecption tccExecption) {
-            LOG.error(tccExecption.getCause());
-            throw new TccRuntimeException(tccExecption.getCause());
+        } catch (TccException tccException) {
+            LOG.error(tccException.getMessage());
+            throw new TccRuntimeException(tccException.getCause());
         }
         return transaction;
     }

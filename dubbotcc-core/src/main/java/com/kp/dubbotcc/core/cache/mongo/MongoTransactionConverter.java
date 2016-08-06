@@ -2,7 +2,7 @@ package com.kp.dubbotcc.core.cache.mongo;
 
 import com.kp.dubbotcc.api.Transaction;
 import com.kp.dubbotcc.commons.emuns.TransactionStatus;
-import com.kp.dubbotcc.commons.exception.TccExecption;
+import com.kp.dubbotcc.commons.exception.TccException;
 import com.kp.dubbotcc.core.cache.TransactionConverter;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class MongoTransactionConverter extends TransactionConverter<MongoTransac
 
 
     @Override
-    public MongoTransactionCache convertToCache() throws TccExecption {
+    public MongoTransactionCache convertToCache() throws TccException {
         MongoTransactionCache cache = new MongoTransactionCache();
         cache.setStatus(this.getTransaction().getStatus().name());
         cache.setTransId(this.getTransaction().getTransId());
@@ -31,7 +31,7 @@ public class MongoTransactionConverter extends TransactionConverter<MongoTransac
     }
 
     @Override
-    public Transaction convertByCache() throws TccExecption {
+    public Transaction convertByCache() throws TccException {
         MongoTransactionCache cache = this.getTransactionCache();
         TransactionStatus status = TransactionStatus.valueOf(cache.getStatus());
         List list = this.getSerializer().deSerialize(cache.getContents(), CopyOnWriteArrayList.class);
