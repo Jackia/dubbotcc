@@ -28,7 +28,7 @@ public class KryoSerializer implements ObjectSerializer {
      * 序列化
      *
      * @param obj 需要序更列化的对象
-     * @return
+     * @return 序列化后的byte 数组
      * @throws TccException
      */
     @Override
@@ -59,7 +59,7 @@ public class KryoSerializer implements ObjectSerializer {
      * 反序列化
      *
      * @param param 需要反序列化的byte []
-     * @return
+     * @return 序列化对象
      * @throws TccException
      */
     @Override
@@ -78,7 +78,7 @@ public class KryoSerializer implements ObjectSerializer {
             try {
                 inputStream.close();
             } catch (IOException e) {
-
+                
             }
         }
         return object;

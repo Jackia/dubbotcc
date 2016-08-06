@@ -18,8 +18,6 @@ import java.util.concurrent.ExecutionException;
  **/
 public class ApplicationConfigCache {
 
-    private final int MAX_COUNT = 1000;
-
     private ApplicationConfigCache() {
     }
 
@@ -43,6 +41,7 @@ public class ApplicationConfigCache {
      * 加入配制信息缓存信息
      */
     public void load() {
+        int MAX_COUNT = 1000;
         cache = CacheBuilder.newBuilder()
                 .maximumWeight(MAX_COUNT)
                 .weigher((Weigher<String, ReferenceConfig<?>>) (string, ReferenceConfig) -> {

@@ -16,6 +16,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 
+import javax.annotation.PostConstruct;
+
 /**
  * 通过Spring初始化一些基本信息
  *
@@ -45,7 +47,15 @@ public class SpringInitialize implements ApplicationContextAware {
     /**
      * 初始Spring信息
      */
+    @PostConstruct
     public void init() {
+        if (tccConfig == null) {
+            String beanName = BeanUtils.getInstance().getBeanName(SpringInitialize.class);
+            TccBeanDefinition beanDefinition = new TccBeanDefinition();
+            beanDefinition.setParentName(beanName);
+            beanDefinition.setBeanClass(TccConfig.class);
+            BeanUtils.getInstance().registerBean("tccConfig", beanDefinition);
+        }
         //初始化使用bean
         SerializerFactory.initFactory();
         //初始化ApplicationConfig
@@ -76,7 +86,7 @@ public class SpringInitialize implements ApplicationContextAware {
     /**
      * 启动回滚队列
      *
-     * @return
+     * @return 服务对象
      */
     @Bean(name = "rollback", autowire = Autowire.BY_TYPE)
     public RollbackService getRollbackService() {

@@ -17,14 +17,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version 1.0
  **/
 public class Transaction implements Serializable {
+    private static final long serialVersionUID = -8502560799238233380L;
     /**
      * 事务ID号
      */
-    private String transId;
+    private final String transId;
     /**
      * 事务开始是间
      */
-    private long startTime;
+    private final long startTime;
     /**
      * 事务执行状态
      */
@@ -32,7 +33,7 @@ public class Transaction implements Serializable {
     /**
      * 需要调用的服务点
      */
-    private List<TccServicePoint> points = null;
+    private  List<TccServicePoint> points;
 
     /**
      * 初始化事务信息

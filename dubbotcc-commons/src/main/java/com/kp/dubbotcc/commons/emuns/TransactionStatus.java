@@ -11,5 +11,5 @@ public enum TransactionStatus {
     BEGIN,//开始事务
     COMMIT,//提交事务
     ROLLBACK,//事务回滚
-    FAILURE;//事务失败
+    FAILURE//事务失败
 }

@@ -10,6 +10,7 @@ import java.io.Serializable;
  * @version 1.0
  **/
 public class TccInvocation implements Serializable {
+    private static final long serialVersionUID = 7722060715819141844L;
     /**
      * 事务执行器
      */

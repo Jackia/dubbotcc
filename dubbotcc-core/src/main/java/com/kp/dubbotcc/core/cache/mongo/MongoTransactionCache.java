@@ -12,6 +12,7 @@ import org.bson.types.ObjectId;
  **/
 public class MongoTransactionCache extends TransactionCache {
 
+    private static final long serialVersionUID = 5777966444956746722L;
     private ObjectId id;
 
     /**

@@ -40,10 +40,9 @@ public class DateUtils {
      *
      * @param str 日期字符串
      * @return 转换后的日期
-     * @throws ParseException
      * @see LocalDateTime
      */
-    public static LocalDateTime parseLocalDateTime(String str) throws ParseException {
+    public static LocalDateTime parseLocalDateTime(String str) {
         return LocalDateTime.parse(str, DateTimeFormatter.ofPattern(DATE_FORMAT_DATETIME));
     }
 
@@ -124,8 +123,8 @@ public class DateUtils {
     /**
      * 将localDateTime 格式化成yyyy-MM-dd HH:mm:ss
      *
-     * @param dateTime
-     * @return
+     * @param dateTime 时间
+     * @return 字符时间
      */
     public static String formaterLocalDateTime(LocalDateTime dateTime) {
         return dateTime.format(DateTimeFormatter.ofPattern(DATE_FORMAT_DATETIME));
@@ -139,7 +138,7 @@ public class DateUtils {
      * @param instant 时间点.
      * @return 日期时间 yyyy-MM-dd HH:mm:ss
      */
-    public static String parseInstantToDataStr(Instant instant) throws ParseException {
+    public static String parseInstantToDataStr(Instant instant) {
         return LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern(DATE_FORMAT_DATETIME));
     }
 
@@ -249,7 +248,7 @@ public class DateUtils {
      * @param dateStr yyyy-MM-dd HH:mm:ss
      * @return 时间信息
      */
-    public static Instant parseDataStrToInstant(String dateStr) throws ParseException {
+    public static Instant parseDataStrToInstant(String dateStr) {
         return parseLocalDateTime(dateStr).toInstant(ZoneOffset.UTC);
     }
 

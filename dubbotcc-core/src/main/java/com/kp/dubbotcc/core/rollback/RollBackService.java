@@ -22,7 +22,7 @@ public class RollbackService extends RollbackQueue {
     /**
      * 线程池大小
      */
-    private final int MAX_THREAD = Runtime.getRuntime().availableProcessors() * 2;
+    private final int MAX_THREAD = Runtime.getRuntime().availableProcessors() << 1;
 
     private final ExecutorService service = Executors.newFixedThreadPool(MAX_THREAD);
 
@@ -31,7 +31,7 @@ public class RollbackService extends RollbackQueue {
      * 监听回滚队列
      */
     public void listerQueue() {
-        LOG.info(" start rollback transaction queue Listening ..............max:" + MAX_THREAD);
+        LOG.info(" start rollback transaction QUEUE Listening ..............max:" + MAX_THREAD);
         for (int i = 0; i < MAX_THREAD; i++) {
             service.execute(new Worker());
         }
@@ -60,7 +60,7 @@ public class RollbackService extends RollbackQueue {
         private void execute() {
             try {
                 while (true) {
-                    Transaction transaction = queue.take();//得到需要回滚的事务对象
+                    Transaction transaction = QUEUE.take();//得到需要回滚的事务对象
                     if (transaction != null) {
                         new TransmitAction(new RollbackAction()).action(transaction);
                     }

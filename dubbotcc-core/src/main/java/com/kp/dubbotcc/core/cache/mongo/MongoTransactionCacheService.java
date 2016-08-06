@@ -30,7 +30,7 @@ public class MongoTransactionCacheService implements TransactionCacheService {
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(MongoTransactionCacheService.class);
-    private final String COLLECTION_NAME = "dubbo_tcc";
+    private static final String COLLECTION_NAME = "dubbo_tcc";
 
     @Override
     public void save(Supplier<? extends TransactionConverter> convert) {

@@ -7,6 +7,7 @@ import com.kp.dubbotcc.api.CompensationCallback;
 import com.kp.dubbotcc.api.Transaction;
 
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -22,7 +23,7 @@ public class RollbackQueue {
     /**
      * 需要回滚的事务队列
      */
-    protected static final LinkedBlockingQueue<Transaction> queue = new LinkedBlockingQueue<>(5000);
+    protected static final BlockingQueue<Transaction> QUEUE = new LinkedBlockingQueue<>(5000);
 
     /**
      * 回滚后的回调操作..
@@ -41,7 +42,7 @@ public class RollbackQueue {
 
     public void submit(Transaction transaction) {
         try {
-            queue.put(transaction);
+            QUEUE.put(transaction);
         } catch (InterruptedException e) {
             LOG.info("需要回滚的事务提交到队列失败..");
         }

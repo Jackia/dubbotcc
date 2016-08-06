@@ -16,13 +16,13 @@ public class SerializerFactory {
     /**
      * 序列化对象
      */
-    private static ObjectSerializer serializer = null;
+    private static ObjectSerializer serializer;
 
 
     /**
      * 初始化一个序列化对象
      */
-    public synchronized static void initFactory() {
+    public static synchronized void initFactory() {
         TccConfig config = BeanUtils.getInstance().getBean(TccConfig.class);
         if (StringUtils.isBlank(config.getSerializer())) {
             serializer = ExtensionLoader.getExtensionLoader(ObjectSerializer.class).getDefaultExtension();

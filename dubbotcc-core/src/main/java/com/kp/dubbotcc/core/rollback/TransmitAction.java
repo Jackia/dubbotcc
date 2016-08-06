@@ -11,7 +11,8 @@ import com.kp.dubbotcc.commons.utils.Assert;
  * @version 1.0
  **/
 public class TransmitAction {
-    private Action action;
+
+    private final Action action;
 
     public TransmitAction(Action action) {
         this.action = action;
@@ -20,7 +21,7 @@ public class TransmitAction {
     /**
      * 开始动作
      *
-     * @return
+     * @return 是否执行成功
      */
     public boolean action(Transaction transaction) {
         Assert.notNull(transaction);
