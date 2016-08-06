@@ -48,7 +48,7 @@ public abstract class TransactionConverter<C extends TransactionCache> {
      */
     public TransactionConverter initToCache(Transaction transaction) {
         this.transaction = transaction;
-        this.serializer = SerializerFactory.serializer();
+        serializer = SerializerFactory.serializer();
         return this;
     }
 
@@ -60,8 +60,8 @@ public abstract class TransactionConverter<C extends TransactionCache> {
      * @return 转换器
      */
     public TransactionConverter initByCache(C cache) {
-        this.transactionCache = cache;
-        this.serializer = SerializerFactory.serializer();
+        transactionCache = cache;
+        serializer = SerializerFactory.serializer();
         return this;
     }
 }

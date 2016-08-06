@@ -16,11 +16,11 @@ public class TccApplicationConfig {
     /**
      * 系统配制
      */
-    private ApplicationConfig applicationConfig = null;
+    private ApplicationConfig applicationConfig;
     /**
      * 注册配置
      */
-    private RegistryConfig registryConfig = null;
+    private RegistryConfig registryConfig;
 
     private static final TccApplicationConfig INSTANCE = new TccApplicationConfig();
 
@@ -36,7 +36,7 @@ public class TccApplicationConfig {
     /**
      * 获取引用配制
      *
-     * @return
+     * @return dubbo 服务调用者  引用
      */
     public ReferenceConfig getConfig(String interfaceName) {
         if (applicationConfig == null) {

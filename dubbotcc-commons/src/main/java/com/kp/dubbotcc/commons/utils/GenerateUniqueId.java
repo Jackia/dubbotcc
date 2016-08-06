@@ -12,22 +12,20 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
+
 /**
- * 生成唯ID
- * project：kp-project /www.kuparts.com
- *
- * @author zhoury
+ * 生成唯一ID
  */
 public class GenerateUniqueId {
 
-    private static char[] digits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    private static final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
-    private static Map<Character, Integer> rDigits = new HashMap<Character, Integer>(16);
+    private static final Map<Character, Integer> rDigits = new HashMap<Character, Integer>(16);
     private static GenerateUniqueId me = new GenerateUniqueId();
 
     static {
-        for (int i = 0; i < digits.length; ++i) {
-            rDigits.put(digits[i], i);
+        for (int i = 0; i < DIGITS.length; ++i) {
+            rDigits.put(DIGITS[i], i);
         }
     }
 
@@ -192,8 +190,8 @@ public class GenerateUniqueId {
         char[] out = new char[l << 1];
 
         for (int i = 0, j = 0; i < l; i++) {
-            out[j++] = digits[(0xF0 & bt[i]) >>> 4];
-            out[j++] = digits[0x0F & bt[i]];
+            out[j++] = DIGITS[(0xF0 & bt[i]) >>> 4];
+            out[j++] = DIGITS[0x0F & bt[i]];
         }
 
         return new String(out);

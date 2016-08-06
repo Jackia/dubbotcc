@@ -15,14 +15,14 @@ public class DefaultTransactionConverter extends TransactionConverter<Transactio
     @Override
     public TransactionCache convertToCache() throws TccException {
         TransactionCache cache = new TransactionCache();
-        cache.setTransId(this.getTransaction().getTransId());
-        byte[] bytes = this.getSerializer().serialize(this.getTransaction());
+        cache.setTransId(getTransaction().getTransId());
+        byte[] bytes = getSerializer().serialize(getTransaction());
         cache.setContents(bytes);
         return cache;
     }
 
     @Override
     public Transaction convertByCache() throws TccException {
-        return this.getSerializer().deSerialize(this.getTransactionCache().getContents(), Transaction.class);
+        return getSerializer().deSerialize(getTransactionCache().getContents(), Transaction.class);
     }
 }

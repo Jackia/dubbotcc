@@ -27,7 +27,7 @@ public class TransactionServiceAware implements TransactionService {
     /**
      * 获取对象
      */
-    private TransactionCacheService cacheService;
+    private final TransactionCacheService cacheService;
 
     /**
      * 初始化一下Bean信息
@@ -40,7 +40,7 @@ public class TransactionServiceAware implements TransactionService {
     public Transaction getTransactionByTransId(String transId) {
         Assert.notNull(transId);
         Supplier<TransactionConverter> supplier = cacheService.get(transId);
-        Transaction transaction = null;
+        Transaction transaction;
         try {
             transaction = supplier.get().convertByCache();
         } catch (TccException tccException) {

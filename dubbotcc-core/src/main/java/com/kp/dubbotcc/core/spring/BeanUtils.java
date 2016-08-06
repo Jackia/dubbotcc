@@ -23,7 +23,7 @@ public class BeanUtils {
     /**
      * 实体对象
      */
-    private final static BeanUtils INSTANCE = new BeanUtils();
+    private static final BeanUtils INSTANCE = new BeanUtils();
 
 
     private BeanUtils() {
@@ -38,7 +38,7 @@ public class BeanUtils {
 
     /**
      * 防止序列化产生对象
-     * @return
+     * @return 防止序列化
      */
     private Object readResolve() {
         return INSTANCE;
@@ -47,9 +47,9 @@ public class BeanUtils {
     /**
      * 获取一个Bean信息
      *
-     * @param type
-     * @param <T>
-     * @return
+     * @param type 类型
+     * @param <T> 泛型
+     * @return 对象
      */
     public <T> T getBean(Class<T> type) {
         Assert.notNull(type);
@@ -57,10 +57,20 @@ public class BeanUtils {
     }
 
     /**
+     * 获取bean的名字
+     * @param type 类型
+     * @return  bean名字
+     */
+    public String getBeanName(Class type){
+        Assert.notNull(type);
+        return cfgContext.getBeanNamesForType(type)[0];
+    }
+
+    /**
      * 判断一个bean是否存在Spring容器中.
      *
-     * @param type
-     * @return
+     * @param type 类型
+     * @return 成功 true 失败 false
      */
     public boolean exitsBean(Class type) {
         Assert.notNull(type);
@@ -70,8 +80,8 @@ public class BeanUtils {
     /**
      * 动态注册一个Bean动Spring容器中
      *
-     * @param beanName
-     * @param beanDefinition
+     * @param beanName 名称
+     * @param beanDefinition 定义bean
      */
     public void registerBean(String beanName, BeanDefinition beanDefinition) {
         Assert.notNull(beanDefinition);

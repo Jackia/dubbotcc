@@ -12,6 +12,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
  **/
 public class TccBeanDefinition extends AbstractBeanDefinition {
 
+    private static final long serialVersionUID = 3546673232639533996L;
     private String parentName;
 
     @Override

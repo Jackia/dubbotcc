@@ -13,6 +13,7 @@ import java.util.List;
  * @version 1.0
  **/
 public class TccConfig implements Serializable {
+    private static final long serialVersionUID = 4374230424756301556L;
     /**
      * 提供不同的序列化对象
      */

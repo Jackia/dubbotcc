@@ -39,6 +39,7 @@ public class TransactionFilter implements Filter {
      */
     private final TccServicePointService trace = new TccServicePointService();
 
+    @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         invoker.getUrl().getIp();
         /**
@@ -55,10 +56,7 @@ public class TransactionFilter implements Filter {
          * 判断是否存在补偿方法,如果不存在不实行补偿事务
          */
         Result result = null;
-        if (!StringUtils.isBlank(rollbackMethod)) {
-            //开始调用
-            return tryCall(invoker, invocation, rollbackMethod);
-        } else {
+        if (StringUtils.isBlank(rollbackMethod)) {
             try {
                 result = invoker.invoke(invocation);
             } catch (RuntimeException e) {
@@ -67,6 +65,9 @@ public class TransactionFilter implements Filter {
                 }
             }
 
+        } else {
+            //开始调用
+            return tryCall(invoker, invocation, rollbackMethod);
         }
         return result;
     }
@@ -74,10 +75,6 @@ public class TransactionFilter implements Filter {
     /**
      * 服务调用方法事务管理实现
      *
-     * @param invoker
-     * @param invocation
-     * @param rollbackMethod
-     * @return
      */
     private Result tryCall(Invoker<?> invoker, Invocation invocation, String rollbackMethod) {
         Transaction transaction = null;
@@ -94,7 +91,6 @@ public class TransactionFilter implements Filter {
         //封装调用节点
         TccInvocation commit = new TccInvocation(serviceType, methodName, Arguments, args);
         TccInvocation rollback = new TccInvocation(serviceType, rollbackMethod, Arguments, args);
-        TccServicePoint point;
         /**
          * 判断调用类型是属于调用方,还是提供方
          */
@@ -117,7 +113,7 @@ public class TransactionFilter implements Filter {
             String transIdExist = invocation.getAttachment(TccConstants.TRANS_ID);
             transaction = TransactionManager.INSTANCE.getTransactionService().getTransactionByTransId(transIdExist);
         }
-        point = trace.generatePoint(transaction, interfaceName, address, port, invoker.getUrl(), commit, rollback);
+        TccServicePoint point = trace.generatePoint(transaction, interfaceName, address, port, invoker.getUrl(), commit, rollback);
         Result result = null;
         try {
             //如果发现获取的事务为空,进行回滚处理

@@ -8,6 +8,8 @@ package com.kp.dubbotcc.commons.exception;
  * @version 1.0
  **/
 public class TccException extends Exception {
+    private static final long serialVersionUID = -948934144333391208L;
+
     public TccException() {
     }
 

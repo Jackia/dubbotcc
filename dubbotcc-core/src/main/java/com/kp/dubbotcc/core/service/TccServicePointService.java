@@ -30,7 +30,7 @@ public class TccServicePointService {
      * @return 事务执行器
      * @throws TccRuntimeException
      */
-    public String checkTccRollback(Class serviceType, String methodName, Class[] args) throws TccRuntimeException {
+    public String checkTccRollback(Class serviceType, String methodName, Class... args) throws TccRuntimeException {
         try {
             Assert.notNull(serviceType);
             Assert.notNull(methodName);

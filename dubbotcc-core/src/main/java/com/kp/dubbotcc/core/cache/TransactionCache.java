@@ -13,6 +13,7 @@ import java.io.Serializable;
  * @version 1.0
  **/
 public class TransactionCache implements Serializable {
+    private static final long serialVersionUID = 69273420105035451L;
     /**
      * 事务id
      */
