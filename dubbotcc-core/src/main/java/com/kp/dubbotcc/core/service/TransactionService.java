@@ -22,12 +22,12 @@ public interface TransactionService {
     /**
      * 保存事务信息
      *
-     * @param tansaction
+     * @param transaction 事务对象
      */
-    void saveTransaction(Transaction tansaction);
+    void saveTransaction(Transaction transaction);
     /**
      * 修改事务信息
-     * @param transaction
+     * @param transaction 事务对象
      */
     void updateTransaction(Transaction transaction);
 }

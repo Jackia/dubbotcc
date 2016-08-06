@@ -3,8 +3,11 @@ package com.kp.dubbotcc.core.rollback;
 
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
+import com.kp.dubbotcc.api.CompensationCallback;
 import com.kp.dubbotcc.api.Transaction;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -20,6 +23,11 @@ public class RollbackQueue {
      * 需要回滚的事务队列
      */
     protected static final LinkedBlockingQueue<Transaction> queue = new LinkedBlockingQueue<>(5000);
+
+    /**
+     * 回滚后的回调操作..
+     */
+    protected static final List<CompensationCallback> CALLBACKS = new CopyOnWriteArrayList<>();
 
     /**
      * 初始化失败的队列信息

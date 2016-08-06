@@ -2,6 +2,8 @@ package com.kp.dubbotcc.core.filter;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Activate;
+import com.alibaba.dubbo.common.logger.Logger;
+import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.rpc.Filter;
 import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Invoker;
@@ -14,6 +16,7 @@ import com.kp.dubbotcc.api.TccInvocation;
 import com.kp.dubbotcc.api.TccServicePoint;
 import com.kp.dubbotcc.api.Transaction;
 import com.kp.dubbotcc.commons.exception.TccRuntimeException;
+import com.kp.dubbotcc.commons.utils.Assert;
 import com.kp.dubbotcc.core.major.TransactionManager;
 import com.kp.dubbotcc.core.service.TccServicePointService;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +30,10 @@ import org.apache.commons.lang3.StringUtils;
  **/
 @Activate(group = {Constants.SERVER_KEY, Constants.CONSUMER})
 public class TransactionFilter implements Filter {
+    /**
+     * 打印日志
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(TransactionFilter.class);
     /**
      * 补偿服务跟踪操作
      */
@@ -49,21 +56,8 @@ public class TransactionFilter implements Filter {
          */
         Result result = null;
         if (!StringUtils.isBlank(rollbackMethod)) {
-            /**
-             * RPC上下文对象
-             */
-            RpcContext context = RpcContext.getContext();
-            /**
-             * 判断调用类型是属于调用方,还是提供方
-             */
-            if (context.isConsumerSide()) {
-                return consumeSide(invoker, invocation, rollbackMethod);
-                /**
-                 * 如果是提供者
-                 */
-            } else if (context.isProviderSide()) {
-                return providerSide(invoker, invocation, rollbackMethod);
-            }
+            //开始调用
+            return tryCall(invoker, invocation, rollbackMethod);
         } else {
             try {
                 result = invoker.invoke(invocation);
@@ -78,18 +72,6 @@ public class TransactionFilter implements Filter {
     }
 
     /**
-     * 服务提供方法事务管理实现
-     *
-     * @param invoker
-     * @param invocation
-     * @param rollbackMethod
-     * @return
-     */
-    private Result providerSide(Invoker<?> invoker, Invocation invocation, String rollbackMethod) {
-        return invoker.invoke(invocation);
-    }
-
-    /**
      * 服务调用方法事务管理实现
      *
      * @param invoker
@@ -97,8 +79,8 @@ public class TransactionFilter implements Filter {
      * @param rollbackMethod
      * @return
      */
-    private Result consumeSide(Invoker<?> invoker, Invocation invocation, String rollbackMethod) {
-        Transaction transaction;
+    private Result tryCall(Invoker<?> invoker, Invocation invocation, String rollbackMethod) {
+        Transaction transaction = null;
         String methodName = invocation.getMethodName();
         Class serviceType = invoker.getInterface();
         Class[] args = invocation.getParameterTypes();
@@ -112,23 +94,35 @@ public class TransactionFilter implements Filter {
         //封装调用节点
         TccInvocation commit = new TccInvocation(serviceType, methodName, Arguments, args);
         TccInvocation rollback = new TccInvocation(serviceType, rollbackMethod, Arguments, args);
-        TccServicePoint point; /**
-         * 获取事务节点
-         */
-        transaction = TransactionManager.INSTANCE.getTransaction();
+        TccServicePoint point;
         /**
-         * 如果本地不存在线程已执行节点
+         * 判断调用类型是属于调用方,还是提供方
          */
-        if (transaction == null) {
-            transaction = TransactionManager.INSTANCE.begin();//开始事务;
-        } else {
-            String transIdExist = transaction.getTransId();
+        RpcContext context = RpcContext.getContext();
+        if (context.isConsumerSide()) {
+            /** 获取事务节点
+             */
+            transaction = TransactionManager.INSTANCE.getTransaction();
+            /**
+             * 如果本地不存在线程已执行节点
+             */
+            if (transaction == null) {
+                transaction = TransactionManager.INSTANCE.begin();//开始事务;
+            } else {
+                String transIdExist = transaction.getTransId();
+                transaction = TransactionManager.INSTANCE.getTransactionService().getTransactionByTransId(transIdExist);
+            }
+        } else if (context.isProviderSide()) {
+
+            String transIdExist = invocation.getAttachment(TccConstants.TRANS_ID);
             transaction = TransactionManager.INSTANCE.getTransactionService().getTransactionByTransId(transIdExist);
         }
         point = trace.generatePoint(transaction, interfaceName, address, port, invoker.getUrl(), commit, rollback);
-        transaction.addServicePotin(point);
         Result result = null;
         try {
+            //如果发现获取的事务为空,进行回滚处理
+            Assert.notNull(transaction);//transaction不为空
+            transaction.addServicePotin(point);
             //提交事务
             commit(transaction, invocation);
             //执行业务

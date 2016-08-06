@@ -20,14 +20,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 /**
- * 执行回调命令..
+ * 执行回滚动作,并根据用户的设置进行,回滚结果回调...
  *
  * @author chenbin@kuparts.com
  * @author chenbin
  * @version 1.0
  **/
 public class RollbackAction implements Action {
-    private static final Logger LOG = LoggerFactory.getLogger(Action.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RollbackAction.class);
 
     @Override
     public boolean execute(Transaction transaction) {
@@ -41,13 +41,9 @@ public class RollbackAction implements Action {
                     result.setFailureId(failurePoint[0].getPointId());//设置错误的point
                     //开始回调客户自身业务
                     try {
-                        TccConfig config = BeanUtils.getInstance().getBean(TccConfig.class);
-                        if (config != null && config.getCallback() != null) {
-                            config.getCallback().callback(result);
-                        }
                         LOG.info("rollback result:" + result.toString());
                     } catch (Exception ex) {
-
+                        LOG.error("callback method error." + ex.getMessage());
                     }
                 });
             } else if (point.getStatus() == ServicePointStatus.FAILURE) {
@@ -57,12 +53,13 @@ public class RollbackAction implements Action {
         return Boolean.TRUE;
     }
 
+
     /**
-     * 具体事务回滚器
+     * 具体的事务回调实现.
      */
     class Worker implements Supplier<TccResponse> {
 
-        TccServicePoint point;
+        private TccServicePoint point;
 
         private Worker(TccServicePoint point) {
             this.point = point;
@@ -101,8 +98,11 @@ public class RollbackAction implements Action {
             return response;
         }
 
+
         /**
-         * 调用dubbo 补偿方法
+         * 调用事务补偿方法
+         * @param config dubbo引用配置
+         * @return 远程调用结果
          */
         private RpcResult invoker(ReferenceConfig config) {
             Object targetInstance = config.get();

@@ -3,6 +3,7 @@ package com.kp.dubbotcc.core.config;
 import com.kp.dubbotcc.api.CompensationCallback;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 需要支持的配置信息.
@@ -21,9 +22,9 @@ public class TccConfig implements Serializable {
      */
     private String cache;
     /**
-     * 补偿方法结果回调
+     * 补偿方法获取..
      */
-    private transient CompensationCallback callback;
+    private transient List<CompensationCallback> callbacks;
 
     public String getSerializer() {
         return serializer;
@@ -41,11 +42,11 @@ public class TccConfig implements Serializable {
         this.cache = cache;
     }
 
-    public void setCallback(CompensationCallback callback) {
-        this.callback = callback;
+    public List<CompensationCallback> getCallbacks() {
+        return callbacks;
     }
 
-    public CompensationCallback getCallback() {
-        return callback;
+    public void setCallbacks(List<CompensationCallback> callbacks) {
+        this.callbacks = callbacks;
     }
 }
