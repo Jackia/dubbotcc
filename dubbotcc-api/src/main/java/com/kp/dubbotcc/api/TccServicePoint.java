@@ -14,6 +14,7 @@ import java.io.Serializable;
  * @version 1.0
  **/
 public class TccServicePoint implements Serializable {
+    private static final long serialVersionUID = 8796306822570541845L;
     /**
      * 事务唯一ID
      */
@@ -128,20 +129,20 @@ public class TccServicePoint implements Serializable {
     }
 
     private TccServicePoint setValue(ServicePointBuilder builder) {
-        this.transId = builder.transId;
-        this.parentId = builder.parentId;
-        this.commitInvocation = builder.commitInvocation;
-        this.pointId = builder.pointId;
-        this.isRoot = builder.isRoot;
-        this.rollbackInvocation = builder.rollbackInvocation;
-        this.serviceName = builder.serviceName;
-        this.startTime = builder.startTime;
-        this.address = builder.address;
-        this.port = builder.port;
-        this.status = builder.status;
-        this.version = builder.version;
-        this.group = builder.group;
-        this.remoteAddress = builder.remoteAddress;
+        transId = builder.transId;
+        parentId = builder.parentId;
+        commitInvocation = builder.commitInvocation;
+        pointId = builder.pointId;
+        isRoot = builder.isRoot;
+        rollbackInvocation = builder.rollbackInvocation;
+        serviceName = builder.serviceName;
+        startTime = builder.startTime;
+        address = builder.address;
+        port = builder.port;
+        status = builder.status;
+        version = builder.version;
+        group = builder.group;
+        remoteAddress = builder.remoteAddress;
         return this;
     }
 
@@ -279,8 +280,8 @@ public class TccServicePoint implements Serializable {
          * 构建servicePoint
          */
         public TccServicePoint build() {
-            this.startTime = DateUtils.nowEpochSecond();
-            this.pointId = GenerateUniqueId.getInstance().getUniqIDHashString();
+            startTime = DateUtils.nowEpochSecond();
+            pointId = GenerateUniqueId.getInstance().getUniqIDHashString();
             return new TccServicePoint().setValue(this);
         }
     }

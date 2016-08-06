@@ -11,6 +11,7 @@ import java.util.Arrays;
  * @version 1.0
  **/
 public class TccResponse implements Serializable {
+    private static final long serialVersionUID = -6745628093904011838L;
     /**
      * 事务ID
      */
