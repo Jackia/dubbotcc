@@ -4,7 +4,7 @@ package com.kuparts.dubbotcc.core.cache;
 import com.kuparts.dubbotcc.api.Transaction;
 import com.kuparts.dubbotcc.commons.exception.TccException;
 import com.kuparts.dubbotcc.core.serializer.ObjectSerializer;
-import com.kuparts.dubbotcc.core.serializer.SerializerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 将事务对象转换为存入缓存对象
@@ -15,7 +15,10 @@ import com.kuparts.dubbotcc.core.serializer.SerializerFactory;
  **/
 public abstract class TransactionConverter<C extends TransactionCache> {
     private Transaction transaction;
+
+    @Autowired
     private ObjectSerializer serializer;
+
     private C transactionCache;
 
     protected Transaction getTransaction() {
@@ -48,7 +51,6 @@ public abstract class TransactionConverter<C extends TransactionCache> {
      */
     public TransactionConverter initToCache(Transaction transaction) {
         this.transaction = transaction;
-        serializer = SerializerFactory.serializer();
         return this;
     }
 
@@ -61,7 +63,6 @@ public abstract class TransactionConverter<C extends TransactionCache> {
      */
     public TransactionConverter initByCache(C cache) {
         transactionCache = cache;
-        serializer = SerializerFactory.serializer();
         return this;
     }
 }

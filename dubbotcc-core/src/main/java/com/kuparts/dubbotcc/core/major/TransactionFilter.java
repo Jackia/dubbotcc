@@ -1,4 +1,4 @@
-package com.kuparts.dubbotcc.core.filter;
+package com.kuparts.dubbotcc.core.major;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Activate;
@@ -17,7 +17,6 @@ import com.kuparts.dubbotcc.api.TccServicePoint;
 import com.kuparts.dubbotcc.api.Transaction;
 import com.kuparts.dubbotcc.commons.exception.TccRuntimeException;
 import com.kuparts.dubbotcc.commons.utils.Assert;
-import com.kuparts.dubbotcc.core.major.TransactionManager;
 import com.kuparts.dubbotcc.core.service.TccServicePointService;
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,7 +40,6 @@ public class TransactionFilter implements Filter {
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        invoker.getUrl().getIp();
         /**
          * 获取相应参数
          */

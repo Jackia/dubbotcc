@@ -3,9 +3,7 @@ package com.kuparts.dubbotcc.core.rollback;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.kuparts.dubbotcc.api.Transaction;
-import com.kuparts.dubbotcc.core.config.TccConfig;
-import com.kuparts.dubbotcc.core.rollback.task.ClearCacheCallback;
-import com.kuparts.dubbotcc.core.spring.BeanUtils;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,6 +15,7 @@ import java.util.concurrent.Executors;
  * @author chenbin
  * @version 1.0
  **/
+@Component
 public class RollbackService extends RollbackQueue {
     private static final Logger LOG = LoggerFactory.getLogger(RollbackService.class);
     /**
@@ -35,13 +34,6 @@ public class RollbackService extends RollbackQueue {
         for (int i = 0; i < MAX_THREAD; i++) {
             service.execute(new Worker());
         }
-        //初始化回滚后的回调集合..
-        //合并集合
-        TccConfig config = BeanUtils.getInstance().getBean(TccConfig.class);
-        if (config != null && config.getCallbacks() != null) {
-            config.getCallbacks().forEach(e -> CALLBACKS.add(e));
-        }
-        CALLBACKS.add(new ClearCacheCallback());
     }
 
     /**

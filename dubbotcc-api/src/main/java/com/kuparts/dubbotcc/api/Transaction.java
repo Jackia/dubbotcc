@@ -34,6 +34,10 @@ public class Transaction implements Serializable {
      * 需要调用的服务点
      */
     private  List<TccServicePoint> points;
+    /**
+     * 回调参数标识
+     */
+    private String callback;
 
     /**
      * 初始化事务信息
@@ -115,6 +119,14 @@ public class Transaction implements Serializable {
         points.add(point);
     }
 
+    public String getCallback() {
+        return callback;
+    }
+
+    public void setCallback(String callback) {
+        this.callback = callback;
+    }
+
     @Override
     public String toString() {
         return "Transaction{" +
@@ -124,4 +136,5 @@ public class Transaction implements Serializable {
                 ", potins=" + points +
                 '}';
     }
+
 }

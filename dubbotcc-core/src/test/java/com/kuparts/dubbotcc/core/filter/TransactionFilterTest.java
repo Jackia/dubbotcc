@@ -8,10 +8,15 @@ import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.dubbo.rpc.RpcResult;
+import com.kuparts.dubbotcc.core.major.TransactionFilter;
 import com.kuparts.dubbotcc.core.support.DemoService;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
 
@@ -26,7 +31,19 @@ import static org.junit.Assert.assertEquals;
 public class TransactionFilterTest {
     Filter filter = new TransactionFilter();
 
+    /**
+     *
+     */
+    @Before
+    public void init(){
+    }
+
     @Test
+    public void test2(){
+        testEcho();
+    }
+
+
     public void testEcho() {
         Class clazz[] = {String.class};
         Invocation invocation = Mockito.mock(Invocation.class);
@@ -34,7 +51,7 @@ public class TransactionFilterTest {
         Mockito.when(invocation.getParameterTypes()).thenReturn(clazz);
         Mockito.when(invocation.getArguments()).thenReturn(new Object[]{"hello"});
         Mockito.when(invocation.getAttachments()).thenReturn(null);
-        Invoker<DemoService> invoker = Mockito.mock(Invoker.class);
+        Invoker invoker = Mockito.mock(Invoker.class);
         Mockito.when(invoker.isAvailable()).thenReturn(true);
         Mockito.when(invoker.getInterface()).thenReturn(DemoService.class);
         RpcResult result = new RpcResult();
@@ -46,8 +63,6 @@ public class TransactionFilterTest {
         Mockito.when(context.isConsumerSide()).thenReturn(true);
         Mockito.when(context.getLocalAddressString()).thenReturn("127.0.0.1");
         Mockito.when(context.getLocalPort()).thenReturn(29800);
-        PowerMockito.mockStatic(RpcContext.class);
-        PowerMockito.when(RpcContext.getContext()).thenReturn(context);
         Result filterResult = filter.invoke(invoker, invocation);
         assertEquals("hello", filterResult.getValue());
     }

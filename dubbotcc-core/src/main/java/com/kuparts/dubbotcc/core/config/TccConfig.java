@@ -2,8 +2,8 @@ package com.kuparts.dubbotcc.core.config;
 
 import com.kuparts.dubbotcc.api.CompensationCallback;
 
-import java.io.Serializable;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * 需要支持的配置信息.
@@ -12,8 +12,7 @@ import java.util.List;
  * @author chenbin
  * @version 1.0
  **/
-public class TccConfig implements Serializable {
-    private static final long serialVersionUID = 4374230424756301556L;
+public class TccConfig {
     /**
      * 提供不同的序列化对象
      */
@@ -25,7 +24,11 @@ public class TccConfig implements Serializable {
     /**
      * 补偿方法获取..
      */
-    private transient List<CompensationCallback> callbacks;
+    private List<CompensationCallback> callbacks;
+
+
+    //get() set() method ==========
+
 
     public String getSerializer() {
         return serializer;
@@ -50,4 +53,5 @@ public class TccConfig implements Serializable {
     public void setCallbacks(List<CompensationCallback> callbacks) {
         this.callbacks = callbacks;
     }
+
 }

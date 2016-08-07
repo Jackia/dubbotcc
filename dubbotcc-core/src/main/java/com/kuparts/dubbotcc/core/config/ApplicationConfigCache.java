@@ -16,7 +16,9 @@ import java.util.concurrent.ExecutionException;
  * @author chenbin
  * @version 1.0
  **/
-public class ApplicationConfigCache {
+public final class ApplicationConfigCache {
+
+    int MAX_COUNT = 1000;
 
     private ApplicationConfigCache() {
     }
@@ -25,7 +27,22 @@ public class ApplicationConfigCache {
         static ApplicationConfigCache instance = new ApplicationConfigCache();
     }
 
-    private LoadingCache<String, ReferenceConfig<?>> cache;
+    private final LoadingCache<String, ReferenceConfig<?>> cache = CacheBuilder.newBuilder()
+            .maximumWeight(MAX_COUNT)
+            .weigher((Weigher<String, ReferenceConfig<?>>) (string, ReferenceConfig) -> getSize())
+            .build(new CacheLoader<String, ReferenceConfig<?>>() {
+                @Override
+                public ReferenceConfig<?> load(String key) throws Exception {
+                    return TccApplicationConfig.getInstance().getConfig(key);
+                }
+            });
+
+    private int getSize() {
+        if (cache == null) {
+            return 0;
+        }
+        return (int) cache.size();
+    }
 
     /**
      * 获取ApplicationConfigCache对象
@@ -35,26 +52,6 @@ public class ApplicationConfigCache {
     public static ApplicationConfigCache getInstance() {
 
         return ApplicationConfigCacheInstance.instance;
-    }
-
-    /**
-     * 加入配制信息缓存信息
-     */
-    public void load() {
-        int MAX_COUNT = 1000;
-        cache = CacheBuilder.newBuilder()
-                .maximumWeight(MAX_COUNT)
-                .weigher((Weigher<String, ReferenceConfig<?>>) (string, ReferenceConfig) -> {
-                    if (cache == null) {
-                        return 0;
-                    }
-                    return (int) cache.size();
-                }).build(new CacheLoader<String, ReferenceConfig<?>>() {
-                    @Override
-                    public ReferenceConfig<?> load(String key) throws Exception {
-                        return TccApplicationConfig.getInstance().getConfig(key);
-                    }
-                });
     }
 
     /**

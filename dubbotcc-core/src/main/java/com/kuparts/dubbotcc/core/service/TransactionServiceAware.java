@@ -8,7 +8,7 @@ import com.kuparts.dubbotcc.commons.exception.TccRuntimeException;
 import com.kuparts.dubbotcc.commons.utils.Assert;
 import com.kuparts.dubbotcc.core.cache.TransactionCacheService;
 import com.kuparts.dubbotcc.core.cache.TransactionConverter;
-import com.kuparts.dubbotcc.core.spring.BeanUtils;
+import com.kuparts.dubbotcc.core.major.BeanServiceUtils;
 
 import java.util.function.Supplier;
 
@@ -33,7 +33,7 @@ public class TransactionServiceAware implements TransactionService {
      * 初始化一下Bean信息
      */
     public TransactionServiceAware() {
-        cacheService = BeanUtils.getInstance().getBean(TransactionCacheService.class);
+        cacheService = BeanServiceUtils.getInstance().getBean(TransactionCacheService.class);
     }
 
     @Override

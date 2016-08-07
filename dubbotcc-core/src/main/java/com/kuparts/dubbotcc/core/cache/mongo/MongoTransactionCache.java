@@ -23,6 +23,18 @@ public class MongoTransactionCache extends TransactionCache {
      * 开始时间
      */
     private Long startTime;
+    /**
+     * 回调方法标识
+     */
+    private String callback;
+
+    public String getCallback() {
+        return callback;
+    }
+
+    public void setCallback(String callback) {
+        this.callback = callback;
+    }
 
     public ObjectId getId() {
         return id;
