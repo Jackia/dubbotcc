@@ -7,6 +7,7 @@ import com.alibaba.dubbo.common.utils.StringUtils;
 import com.kuparts.dubbotcc.commons.exception.TccRuntimeException;
 import com.kuparts.dubbotcc.core.cache.TransactionCacheService;
 import com.kuparts.dubbotcc.core.config.TccExtConfig;
+import com.kuparts.dubbotcc.core.rollback.CallbackService;
 import com.kuparts.dubbotcc.core.rollback.RollbackService;
 import com.kuparts.dubbotcc.core.serializer.SerializerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +29,16 @@ public class ServiceInitialize {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceInitialize.class);
 
     @Autowired
-    TccExtConfig confg;
+    TccExtConfig config;
 
     @Autowired
     RollbackService rollback;
 
     @Autowired
     SerializerFactory serializerFactory;
+
+    @Autowired
+    CallbackService callbackService;
 
     /**
      * 初始化服务
@@ -46,7 +50,7 @@ public class ServiceInitialize {
     }
 
     @PostConstruct
-    public void befour() {
+    public void before() {
         initCache();
     }
 
@@ -55,10 +59,10 @@ public class ServiceInitialize {
      */
     public void initCache() {
         TransactionCacheService service;
-        if (StringUtils.isBlank(confg.getCache())) {
+        if (StringUtils.isBlank(config.getCache())) {
             service = ExtensionLoader.getExtensionLoader(TransactionCacheService.class).getDefaultExtension();
         } else {
-            service = ExtensionLoader.getExtensionLoader(TransactionCacheService.class).getExtension(confg.getCache());
+            service = ExtensionLoader.getExtensionLoader(TransactionCacheService.class).getExtension(config.getCache());
             if (service == null) {
                 LOG.error("没有加载到缓存对象..cache is null", new TccRuntimeException());
                 throw new TccRuntimeException("没有加载到缓存对象..cache is null");
@@ -68,14 +72,12 @@ public class ServiceInitialize {
     }
 
     /**
-     * 初始化序列化对象
+     * 加载回调方法实体
+     *
+     * @param beans beans对象
      */
-    public void initSeriaalizer() {
-
-    }
-
     public void loadCallback(Map<String, Object> beans) {
-        rollback.fullCallback(confg.getCallbacks());
-        rollback.fullCallback(beans);
+        callbackService.fullCallback(config.getCallbacks());
+        callbackService.fullCallback(beans);
     }
 }

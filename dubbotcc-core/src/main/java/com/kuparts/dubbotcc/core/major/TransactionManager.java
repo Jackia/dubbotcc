@@ -35,6 +35,10 @@ public enum TransactionManager {
      * 打印日志
      */
     private static final Logger LOG = LoggerFactory.getLogger(TransactionManager.class);
+    /**
+     * 回调服务
+     */
+    RollbackService rollbackService = BeanServiceUtils.getInstance().getBean(RollbackService.class);
 
     /**
      * 开始事务
@@ -46,8 +50,6 @@ public enum TransactionManager {
             //开始事务
             entity = new Transaction();
         }
-        StackTraceElement stack = Thread.currentThread().getStackTrace()[2];
-        entity.setCallback(stack.getMethodName());
         LOCAL.set(entity);
         service.saveTransaction(entity);
         LOG.debug("begin transaction :" + entity.getTransId());
@@ -76,7 +78,7 @@ public enum TransactionManager {
         }
         transaction.modifyStatus(TransactionStatus.ROLLBACK);
         tccService.modifyCurrentStatus(transaction, ServicePointStatus.FAILURE);//节点状态
-        BeanServiceUtils.getInstance().getBean(RollbackService.class).submit(transaction);
+        rollbackService.submit(transaction, Thread.currentThread().getStackTrace());
         LOG.debug("submit rollback transaction :" + transaction.getTransId());
     }
 

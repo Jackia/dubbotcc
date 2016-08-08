@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * 用于指定回滚后所通知本地的回调方法
+ *
  * @author chenbin@kuparts.com
  * @author chenbin
  * @version 1.0
@@ -17,4 +18,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Component
 public @interface TCCC {
+    Class value();
 }

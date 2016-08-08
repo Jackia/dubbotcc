@@ -1,4 +1,4 @@
-package com.kuparts.dubbotcc.core.rollback;
+package com.kuparts.dubbotcc.api;
 
 import java.lang.reflect.Method;
 
@@ -9,10 +9,14 @@ import java.lang.reflect.Method;
  * @author chenbin
  * @version 1.0
  **/
-public class CallbackType {
+public class Callback {
     /**
      * 标识,
      */
+    private String methodName;
+
+    private String className;
+
     private Mark mark;
     /**
      * 方法
@@ -22,6 +26,22 @@ public class CallbackType {
      * 回调目标类
      */
     private Class callClazz;
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
 
     public Mark getMark() {
         return mark;
@@ -46,12 +66,12 @@ public class CallbackType {
     public void setCallClazz(Class callClazz) {
         this.callClazz = callClazz;
     }
-}
 
-/**
- * 标识
- */
-enum Mark {
-    TCCC,//注解
-    API//接口实现
+    /**
+     * 标识
+     */
+    public enum Mark {
+        TCCC,//注解
+        API//接口实现
+    }
 }

@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>dubbotcc-parent</artifactId>
-        <groupId>com.kp.dubbotcc</groupId>
+        <groupId>com.kuparts.dubbotcc</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -77,9 +77,13 @@
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.kp.dubbotcc</groupId>
+            <groupId>com.kuparts.dubbotcc</groupId>
             <artifactId>dubbotcc-core</artifactId>
             <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
         </dependency>
     </dependencies>
 </project>

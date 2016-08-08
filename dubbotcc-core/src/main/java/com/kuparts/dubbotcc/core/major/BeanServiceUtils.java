@@ -15,6 +15,11 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -100,17 +105,62 @@ public class BeanServiceUtils {
      * @param beanName  名称
      * @param beanClazz 定义bean
      */
-    public void registerBean(String beanName, Class beanClazz) {
+    public void registerBean(String beanName, Class beanClazz, Map<String, Object> propertys) {
         Assert.notNull(beanName);
+        Assert.notNull(beanClazz);
         boolean flag = exitsBean(TccTransactionSpring.class);
         if (!flag) {
             LOG.error("没有定义com.kuparts.dubbotcc.core.spring.TccTransactionSpring", new TccRuntimeException());
             return;
         }
         BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry) cfgContext.getBeanFactory();
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(beanClazz);
+        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(beanClazz);
+        if (propertys != null) {
+            propertys.forEach((k, v) -> builder.addPropertyValue(k, v));
+        }
         builder.setScope(BeanDefinition.SCOPE_SINGLETON);
         beanDefinitionRegistry.registerBeanDefinition(beanName, builder.getBeanDefinition());
+    }
+
+    /**
+     * bean对象转换成map对象
+     *
+     * @param obj
+     * @return
+     */
+    public static Map<String, Object> transBean2Map(Object obj) {
+        Assert.notNull(obj);
+        Map<String, Object> map = new HashMap<>();
+        try {
+            BeanInfo beanInfo = Introspector.getBeanInfo(obj.getClass());
+            PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+            for (PropertyDescriptor property : propertyDescriptors) {
+                String key = property.getName();
+
+                // 过滤class属性
+                if (!key.equals("class")) {
+                    // 得到property对应的getter方法
+                    Method getter = property.getReadMethod();
+                    Object value = getter.invoke(obj);
+                    map.put(key, value);
+                }
+
+            }
+        } catch (Exception e) {
+            LOG.error("transBean2Map Error " + e);
+        }
+        return map;
+
+    }
+
+    /**
+     * 动态注册一个Bean动Spring容器中
+     *
+     * @param beanName  名称
+     * @param beanClazz 定义bean
+     */
+    public void registerBean(String beanName, Class beanClazz) {
+        registerBean(beanName, beanClazz, null);
     }
 
     /**
@@ -121,15 +171,15 @@ public class BeanServiceUtils {
      */
     public void setCfgContext(ApplicationContext applicationContext, TccSpringConfig config) throws BeansException {
         cfgContext = (ConfigurableApplicationContext) applicationContext;
-        new TccConfigBuilder().build(config);
+        TccConfigBuilder.build(config);
         registerBean();
         if (initialize == null) {
             initialize = getBean(ServiceInitialize.class);
         }
+        initialize.init();
         //扫描外部TCCC
         Map<String, Object> beans = cfgContext.getBeansWithAnnotation(TCCC.class);
         loadCallback(beans);
-        initialize.init();
     }
 
 

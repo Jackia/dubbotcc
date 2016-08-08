@@ -42,7 +42,7 @@ public class MongoTransactionCacheService implements TransactionCacheService {
         MongoTransactionCache cache = null;
         try {
             cache = (MongoTransactionCache) convert.get().convertToCache();
-        } catch (TccException tccException) {
+        } catch (Exception tccException) {
             LOG.error(tccException.getCause());
         }
         template.save(cache, COLLECTION_NAME);
@@ -54,7 +54,7 @@ public class MongoTransactionCacheService implements TransactionCacheService {
         MongoTransactionCache cache = null;
         try {
             cache = (MongoTransactionCache) convert.get().convertToCache();
-        } catch (TccException tccException) {
+        } catch (Exception tccException) {
             LOG.error(tccException.getCause());
         }
         Query query = new Query();

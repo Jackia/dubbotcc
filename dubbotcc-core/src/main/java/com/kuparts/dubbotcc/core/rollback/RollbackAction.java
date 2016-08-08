@@ -11,6 +11,7 @@ import com.kuparts.dubbotcc.commons.emuns.ServicePointStatus;
 import com.kuparts.dubbotcc.commons.exception.TccException;
 import com.kuparts.dubbotcc.commons.utils.Assert;
 import com.kuparts.dubbotcc.core.config.ApplicationConfigCache;
+import com.kuparts.dubbotcc.core.major.BeanServiceUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -38,8 +39,9 @@ public class RollbackAction implements Action {
                     //rollback执行完毕,
                     result.setFailureId(failurePoint[0].getPointId());//设置错误的point
                     //开始回调客户自身业务
-
                     try {
+                        BeanServiceUtils.getInstance().getBean(CallbackService.class)
+                                .execute(transaction.getCallback(), result);
                         LOG.info("rollback result:" + result);
                     } catch (Exception ex) {
                         LOG.error("callback method error." + ex.getMessage());
@@ -51,7 +53,6 @@ public class RollbackAction implements Action {
         });
         return Boolean.TRUE;
     }
-
 
     /**
      * 具体的事务回调实现.
@@ -100,6 +101,7 @@ public class RollbackAction implements Action {
 
         /**
          * 调用事务补偿方法
+         *
          * @param config dubbo引用配置
          * @return 远程调用结果
          */

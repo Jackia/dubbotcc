@@ -1,1 +1,0 @@
-mongo=com.kp.dubbotcc.core.cache.mongo.MongoTransactionCacheService

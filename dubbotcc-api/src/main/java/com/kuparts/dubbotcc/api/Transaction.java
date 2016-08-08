@@ -33,11 +33,11 @@ public class Transaction implements Serializable {
     /**
      * 需要调用的服务点
      */
-    private  List<TccServicePoint> points;
+    private List<TccServicePoint> points;
     /**
      * 回调参数标识
      */
-    private String callback;
+    private transient Callback callback;
 
     /**
      * 初始化事务信息
@@ -119,11 +119,11 @@ public class Transaction implements Serializable {
         points.add(point);
     }
 
-    public String getCallback() {
+    public Callback getCallback() {
         return callback;
     }
 
-    public void setCallback(String callback) {
+    public void setCallback(Callback callback) {
         this.callback = callback;
     }
 

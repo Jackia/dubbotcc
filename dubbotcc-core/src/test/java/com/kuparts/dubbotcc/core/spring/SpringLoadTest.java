@@ -1,21 +1,25 @@
 package com.kuparts.dubbotcc.core.spring;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
 
 /**
  * @author chenbin@kuparts.com
  * @author chenbin
  * @version 1.0
  **/
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:application.xml")
-public class SpringLoadTest{
+public class SpringLoadTest {
+
     @Test
-    public void test(){
-        System.out.println("加载");
+    public void test() {
+        String va = "com.kp.core.cccccc";
+        List<String> result = Splitter.on(".").limit(3).splitToList(va);
+        System.out.println(Joiner.on(".").join(result.subList(0,2)));
+
+
     }
 }

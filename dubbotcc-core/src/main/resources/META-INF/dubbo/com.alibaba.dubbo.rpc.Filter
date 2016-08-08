@@ -1,1 +1,1 @@
-kptrans=com.kp.dubbotcc.core.filter.TransactionFilter
+kptrans=com.kuparts.dubbotcc.core.major.TransactionFilter

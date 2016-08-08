@@ -1,5 +1,7 @@
 package com.kuparts.dubbotcc.core.config;
 
+import java.util.Map;
+
 /**
  * 扩展配置信息
  * @author chenbin@kuparts.com

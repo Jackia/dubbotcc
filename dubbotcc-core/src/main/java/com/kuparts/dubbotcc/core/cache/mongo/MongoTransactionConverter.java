@@ -3,7 +3,6 @@ package com.kuparts.dubbotcc.core.cache.mongo;
 import com.kuparts.dubbotcc.api.TccServicePoint;
 import com.kuparts.dubbotcc.api.Transaction;
 import com.kuparts.dubbotcc.commons.emuns.TransactionStatus;
-import com.kuparts.dubbotcc.commons.exception.TccException;
 import com.kuparts.dubbotcc.core.cache.TransactionConverter;
 
 import java.util.List;
@@ -11,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * mongo存入数据封装
+ *
  * @author chenbin@kuparts.com
  * @author chenbin
  * @version 1.0
@@ -19,7 +19,7 @@ public class MongoTransactionConverter extends TransactionConverter<MongoTransac
 
 
     @Override
-    public MongoTransactionCache convertToCache() throws TccException {
+    public MongoTransactionCache convertToCache() throws Exception {
         MongoTransactionCache cache = new MongoTransactionCache();
         cache.setStatus(getTransaction().getStatus().name());
         cache.setTransId(getTransaction().getTransId());
@@ -30,7 +30,7 @@ public class MongoTransactionConverter extends TransactionConverter<MongoTransac
     }
 
     @Override
-    public Transaction convertByCache() throws TccException {
+    public Transaction convertByCache() throws Exception {
         MongoTransactionCache cache = getTransactionCache();
         TransactionStatus status = TransactionStatus.valueOf(cache.getStatus());
         List<TccServicePoint> list = getSerializer()

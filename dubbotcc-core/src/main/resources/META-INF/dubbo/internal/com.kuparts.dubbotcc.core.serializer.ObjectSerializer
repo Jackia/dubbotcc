@@ -1,0 +1,1 @@
+kryo=com.kuparts.dubbotcc.core.serializer.KryoSerializer

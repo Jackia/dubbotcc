@@ -43,7 +43,7 @@ public class TransactionServiceAware implements TransactionService {
         Transaction transaction;
         try {
             transaction = supplier.get().convertByCache();
-        } catch (TccException tccException) {
+        } catch (Exception tccException) {
             LOG.error(tccException.getMessage());
             throw new TccRuntimeException(tccException.getCause());
         }

@@ -3,16 +3,19 @@ package com.kp.dubbotcc.test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- *
  * @author chenbin@kuparts.com
  * @author chenbin
  * @version 1.0
  **/
 public class SpringCusmter {
-    public static void main(String [] args) {
+    public static void main(String[] args) {
+        new SpringCusmter().test();
+    }
+
+    public void test() {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:application.xml");
         context.getBeanFactory();
-        DemoSpring demoSpring =  context.getBean(DemoSpring.class);
+        DemoSpring demoSpring = context.getBean(DemoSpring.class);
         demoSpring.print();
         try {
             Thread.sleep(Integer.MAX_VALUE);
