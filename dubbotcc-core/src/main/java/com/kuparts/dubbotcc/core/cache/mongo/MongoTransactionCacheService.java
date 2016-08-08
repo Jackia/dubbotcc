@@ -2,7 +2,6 @@ package com.kuparts.dubbotcc.core.cache.mongo;
 
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
-import com.kuparts.dubbotcc.commons.exception.TccException;
 import com.kuparts.dubbotcc.commons.utils.Assert;
 import com.kuparts.dubbotcc.core.cache.TransactionCacheService;
 import com.kuparts.dubbotcc.core.cache.TransactionConverter;
@@ -36,6 +35,7 @@ public class MongoTransactionCacheService implements TransactionCacheService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MongoTransactionCacheService.class);
     private static final String COLLECTION_NAME = "dubbo_tcc";
+    private static final String COLLECTION_NAME_HISTORY = "dubbo_tcc_history";
 
     @Override
     public void save(Supplier<? extends TransactionConverter> convert) {
@@ -75,15 +75,20 @@ public class MongoTransactionCacheService implements TransactionCacheService {
         MongoTransactionCache cache = template.findOne(query, MongoTransactionCache.class, COLLECTION_NAME);
         return () -> new MongoTransactionConverter().initByCache(cache);
     }
-
-
     /**
      * 清除事务资源..
+     * 不是物理上删除,只是放入历史数据中
      *
      * @param transId 事务ID
      */
     @Override
     public void remove(String transId) {
         Assert.notNull(transId);
+        Query query = new Query();
+        query.addCriteria(new Criteria("transId").is(transId));
+        MongoTransactionCache cache = template.findOne(query, MongoTransactionCache.class, COLLECTION_NAME);
+        template.save(cache, COLLECTION_NAME_HISTORY);
+        //查询事务数据
+        template.remove(query, COLLECTION_NAME);
     }
 }

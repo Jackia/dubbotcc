@@ -5,6 +5,7 @@ import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.kuparts.dubbotcc.commons.exception.TccRuntimeException;
 import com.kuparts.dubbotcc.commons.utils.Assert;
 import com.kuparts.dubbotcc.core.config.TccConfigBuilder;
+import com.kuparts.dubbotcc.core.rollback.task.DefaultTask;
 import com.kuparts.dubbotcc.core.spring.TCCC;
 import com.kuparts.dubbotcc.core.spring.TccSpringConfig;
 import com.kuparts.dubbotcc.core.spring.TccTransactionSpring;
@@ -177,9 +178,7 @@ public class BeanServiceUtils {
             initialize = getBean(ServiceInitialize.class);
         }
         initialize.init();
-        //扫描外部TCCC
-        Map<String, Object> beans = cfgContext.getBeansWithAnnotation(TCCC.class);
-        loadCallback(beans);
+        loadCallback();//加载回调方法
     }
 
 
@@ -196,11 +195,13 @@ public class BeanServiceUtils {
 
     /**
      * 加载回调
-     *
-     * @param beans beans
      */
-    private void loadCallback(Map<String, Object> beans) {
-        Assert.notNull(beans);
-        initialize.loadCallback(beans);
+    private void loadCallback() {
+        //扫描外部TCCC
+        Map<String, Object> beans = cfgContext.getBeansWithAnnotation(DefaultTask.class);
+        initialize.loadCallBackByDefault(beans);
+        beans = cfgContext.getBeansWithAnnotation(TCCC.class);
+        initialize.loadCallback(beans);//加载用户自定义回调
+        initialize.loadCallbackByConfig();//加载用户配置文件回调
     }
 }

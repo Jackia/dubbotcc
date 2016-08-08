@@ -26,6 +26,10 @@ public class Callback {
      * 回调目标类
      */
     private Class callClazz;
+    /**
+     * 目标bean
+     */
+    private Object bean;
 
     public String getMethodName() {
         return methodName;
@@ -67,6 +71,13 @@ public class Callback {
         this.callClazz = callClazz;
     }
 
+    public Object getBean() {
+        return bean;
+    }
+
+    public void setBean(Object bean) {
+        this.bean = bean;
+    }
     /**
      * 标识
      */

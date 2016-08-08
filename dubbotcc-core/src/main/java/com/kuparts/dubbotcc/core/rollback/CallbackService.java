@@ -15,7 +15,6 @@ import com.kuparts.dubbotcc.core.spring.TcccMethod;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,6 +69,7 @@ public class CallbackService {
                             String className = v.getClass().getAnnotation(TCCC.class).value().getName();
                             t.setMethodName(methodName);
                             t.setClassName(className);
+                            t.setBean(v);
                             CALLBACKS.add(t);
                             //加入过滤列表
                             addFilters(className);
@@ -113,6 +113,7 @@ public class CallbackService {
                 t.setMethod(m);
                 t.setClassName(e.getClass().getName());
                 t.setMethodName(m.getName());
+                t.setBean(e);
                 CALLBACKS.add(t);
                 //加入过滤列表
                 addFilters(e.getClass().getName());
@@ -178,12 +179,10 @@ public class CallbackService {
         CALLBACKS.stream().filter(e -> e.getMark() == Callback.Mark.API).forEach(e -> {
 
             try {
-                CompensationCallback apiCallback = Reflection.newProxy(CompensationCallback.class, new TccProxy(e.getCallClazz().newInstance()));
+                CompensationCallback apiCallback = Reflection.newProxy(CompensationCallback.class, new TccProxy(e.getBean()));
                 Assert.notNull(apiCallback);
                 apiCallback.callback(response);
-            } catch (InstantiationException e1) {
-                LOG.error("callback execute failure:classname  " + e.getClassName() + "," + e1.getMessage());
-            } catch (IllegalAccessException e1) {
+            } catch (Exception e1) {
                 LOG.error("callback execute failure:classname  " + e.getClassName() + "," + e1.getMessage());
             }
         });
@@ -192,13 +191,8 @@ public class CallbackService {
         Callback c1 = optional.orElseGet(() -> existCallback(callback));
         if (c1 == null) return;
         try {
-            Object instance = c1.getCallClazz().newInstance();
-            c1.getMethod().invoke(instance, response);
-        } catch (InstantiationException e) {
-            LOG.error("callback execute failure:classname  " + c1.getClassName() + "," + e.getMessage());
-        } catch (IllegalAccessException e) {
-            LOG.error("callback execute failure:classname  " + c1.getClassName() + "," + e.getMessage());
-        } catch (InvocationTargetException e) {
+            c1.getMethod().invoke(c1.getBean(), response);
+        } catch (Exception e) {
             LOG.error("callback execute failure:classname  " + c1.getClassName() + "," + e.getMessage());
         }
     }
