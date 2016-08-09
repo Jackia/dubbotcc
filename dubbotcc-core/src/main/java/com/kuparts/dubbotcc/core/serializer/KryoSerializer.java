@@ -44,7 +44,7 @@ public class KryoSerializer implements ObjectSerializer {
             output.flush();
         } catch (Exception ex) {
             throw new TccException("kryo serialize error" + ex.getMessage());
-        }finally {
+        } finally {
             try {
                 outputStream.flush();
                 outputStream.close();
@@ -63,22 +63,22 @@ public class KryoSerializer implements ObjectSerializer {
      * @throws TccException
      */
     @Override
-    public <T> T deSerialize(byte[] param,Class<T> clazz) throws TccException {
+    public <T> T deSerialize(byte[] param, Class<T> clazz) throws TccException {
         T object = null;
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(param);
+        ByteArrayInputStream inputStream = null;
         try {
-
+            inputStream = new ByteArrayInputStream(param);
             Kryo kryo = new Kryo();
             Input input = new Input(inputStream);
-            object = kryo.readObject(input,clazz);
+            object = kryo.readObject(input, clazz);
             input.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new TccException("kryo deSerialize error" + e.getMessage());
-        }finally {
+        } finally {
             try {
                 inputStream.close();
             } catch (IOException e) {
-                
+
             }
         }
         return object;
