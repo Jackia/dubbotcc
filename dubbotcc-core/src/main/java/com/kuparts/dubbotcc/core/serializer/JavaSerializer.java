@@ -28,7 +28,7 @@ public class JavaSerializer implements ObjectSerializer {
             objectOutput.flush();
             objectOutput.close();
         } catch (IOException e) {
-            throw new TccException("JAVA serialize error" + e.getMessage());
+            throw new TccException("JAVA serialize error " + e.getMessage());
         }
         return arrayOutputStream.toByteArray();
     }
@@ -40,9 +40,9 @@ public class JavaSerializer implements ObjectSerializer {
             ObjectInput input = new ObjectInputStream(arrayInputStream);
             return (T) input.readObject();
         } catch (IOException e) {
-            throw new TccException("JAVA deSerialize error" + e.getMessage());
+            throw new TccException("JAVA deSerialize error " + e.getMessage());
         } catch (ClassNotFoundException e) {
-            throw new TccException("JAVA deSerialize error" + e.getMessage());
+            throw new TccException("JAVA deSerialize error " + e.getMessage());
         }
     }
 }

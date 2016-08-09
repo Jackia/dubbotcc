@@ -26,7 +26,7 @@ public class HessianSerializer implements ObjectSerializer {
             hos.flush();
             hos.close();
         } catch (IOException ex) {
-            throw new TccException("Hessian serialize error" + ex.getMessage());
+            throw new TccException("Hessian serialize error " + ex.getMessage());
         }
         return baos.toByteArray();
     }
@@ -39,7 +39,7 @@ public class HessianSerializer implements ObjectSerializer {
             Hessian2Input his = new Hessian2Input(bios);
             return (T) his.readObject();
         } catch (IOException e) {
-            throw new TccException("Hessian deSerialize error" + e.getMessage());
+            throw new TccException("Hessian deSerialize error " + e.getMessage());
         }
     }
 }
