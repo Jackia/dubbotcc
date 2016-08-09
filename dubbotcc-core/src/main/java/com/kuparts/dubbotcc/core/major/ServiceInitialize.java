@@ -11,8 +11,12 @@ import com.kuparts.dubbotcc.core.cache.TransactionCacheService;
 import com.kuparts.dubbotcc.core.config.TccExtConfig;
 import com.kuparts.dubbotcc.core.rollback.CallbackService;
 import com.kuparts.dubbotcc.core.rollback.RollbackService;
+import com.kuparts.dubbotcc.core.rollback.task.DefaultTask;
 import com.kuparts.dubbotcc.core.serializer.SerializerFactory;
+import com.kuparts.dubbotcc.core.spring.TCCC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -43,13 +47,17 @@ public class ServiceInitialize {
     @Autowired
     CallbackService callbackService;
 
+    private ApplicationContext cfgContext;
+
     /**
      * 初始化服务
      */
-    public void init() {
+    public void init(ApplicationContext applicationContext) {
+        this.cfgContext = applicationContext;
         //合并回调方法信息
         rollback.listerQueue();
         serializerFactory.initFactory();
+        loadCallback();
     }
 
     @PostConstruct
@@ -74,6 +82,18 @@ public class ServiceInitialize {
         BeanServiceUtils.getInstance().registerBean(TransactionCacheService.class.getName(), service.getClass());
     }
 
+
+    /**
+     * 加载回调
+     */
+    private void loadCallback() {
+        //扫描外部TCCC
+        Map<String, Object> beans = cfgContext.getBeansWithAnnotation(DefaultTask.class);
+        loadCallBackByDefault(beans);
+        beans = cfgContext.getBeansWithAnnotation(TCCC.class);
+        loadCallback(beans);//加载用户自定义回调
+        loadCallbackByConfig();//加载用户配置文件回调
+    }
 
     /**
      * 加载默认回调

@@ -5,8 +5,6 @@ import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.kuparts.dubbotcc.commons.exception.TccRuntimeException;
 import com.kuparts.dubbotcc.commons.utils.Assert;
 import com.kuparts.dubbotcc.core.config.TccConfigBuilder;
-import com.kuparts.dubbotcc.core.rollback.task.DefaultTask;
-import com.kuparts.dubbotcc.core.spring.TCCC;
 import com.kuparts.dubbotcc.core.spring.TccSpringConfig;
 import com.kuparts.dubbotcc.core.spring.TccTransactionSpring;
 import org.springframework.beans.BeansException;
@@ -32,7 +30,6 @@ import java.util.Map;
  **/
 public class BeanServiceUtils {
     private static final Logger LOG = LoggerFactory.getLogger(BeanServiceUtils.class);
-
     //扫描包
     private final String SCAN_PACKAGE = "com.kuparts";
 
@@ -177,10 +174,8 @@ public class BeanServiceUtils {
         if (initialize == null) {
             initialize = getBean(ServiceInitialize.class);
         }
-        initialize.init();
-        loadCallback();//加载回调方法
+        initialize.init(cfgContext);
     }
-
 
     /**
      * 初始化Bean
@@ -193,15 +188,4 @@ public class BeanServiceUtils {
         scanner.scan(SCAN_PACKAGE);
     }
 
-    /**
-     * 加载回调
-     */
-    private void loadCallback() {
-        //扫描外部TCCC
-        Map<String, Object> beans = cfgContext.getBeansWithAnnotation(DefaultTask.class);
-        initialize.loadCallBackByDefault(beans);
-        beans = cfgContext.getBeansWithAnnotation(TCCC.class);
-        initialize.loadCallback(beans);//加载用户自定义回调
-        initialize.loadCallbackByConfig();//加载用户配置文件回调
-    }
 }
