@@ -39,12 +39,10 @@ public class CallbackService {
      * 回滚后的回调操作..
      */
     private final List<Callback> CALLBACKS = new CopyOnWriteArrayList<>();
-
     /**
      * 回调过滤列表
      */
     private final List<String> FILTERS = new ArrayList<>();
-
     /**
      * bean方法填充
      *
