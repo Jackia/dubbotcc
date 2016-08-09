@@ -8,9 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * project：dubbotcc-parent /www.kuparts.com
- * Created By chenbin on 2016/8/8 17:24
- *
+ * 标识系统默认回调任务执行
  * @author chenbin@kuparts.com
  * @author chenbin
  * @version 1.0
