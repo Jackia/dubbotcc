@@ -3,14 +3,10 @@ package com.kuparts.dubbotcc.core.service;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.kuparts.dubbotcc.api.Transaction;
-import com.kuparts.dubbotcc.commons.exception.TccException;
 import com.kuparts.dubbotcc.commons.exception.TccRuntimeException;
 import com.kuparts.dubbotcc.commons.utils.Assert;
 import com.kuparts.dubbotcc.core.cache.TransactionCacheService;
-import com.kuparts.dubbotcc.core.cache.TransactionConverter;
 import com.kuparts.dubbotcc.core.major.BeanServiceUtils;
-
-import java.util.function.Supplier;
 
 /**
  * 对transService服务实现
@@ -39,10 +35,8 @@ public class TransactionServiceAware implements TransactionService {
     @Override
     public Transaction getTransactionByTransId(String transId) {
         Assert.notNull(transId);
-        Supplier<TransactionConverter> supplier = cacheService.get(transId);
-        Transaction transaction;
+        Transaction transaction = cacheService.get(transId);
         try {
-            transaction = supplier.get().convertByCache();
         } catch (Exception tccException) {
             LOG.error(tccException.getMessage());
             throw new TccRuntimeException(tccException.getCause());
@@ -53,13 +47,13 @@ public class TransactionServiceAware implements TransactionService {
     @Override
     public void saveTransaction(Transaction transaction) {
         Assert.notNull(transaction);
-        cacheService.save(() -> cacheService.initConverter().initToCache(transaction));
+        cacheService.save(transaction);
     }
 
     @Override
     public void updateTransaction(Transaction transaction) {
         Assert.notNull(transaction);
         Assert.notNull(transaction.getTransId());
-        cacheService.update(() -> cacheService.initConverter().initToCache(transaction));
+        cacheService.update(transaction);
     }
 }

@@ -1,7 +1,6 @@
 package com.kuparts.dubbotcc.core.cache;
 
 import com.kuparts.dubbotcc.api.Transaction;
-import com.kuparts.dubbotcc.commons.exception.TccException;
 
 /**
  * 实现一个默认转换器..
@@ -13,16 +12,16 @@ import com.kuparts.dubbotcc.commons.exception.TccException;
  **/
 public class DefaultTransactionConverter extends TransactionConverter<TransactionCache> {
     @Override
-    public TransactionCache convertToCache() throws TccException {
+    public TransactionCache convertToCache(Transaction transaction) throws Exception {
         TransactionCache cache = new TransactionCache();
-        cache.setTransId(getTransaction().getTransId());
-        byte[] bytes = getSerializer().serialize(getTransaction());
+        cache.setTransId(transaction.getTransId());
+        byte[] bytes = serializer.serialize(transaction);
         cache.setContents(bytes);
         return cache;
     }
 
     @Override
-    public Transaction convertByCache() throws TccException {
-        return getSerializer().deSerialize(getTransactionCache().getContents(), Transaction.class);
+    public Transaction convertByCache(TransactionCache cache) throws Exception {
+        return getSerializer().deSerialize(cache.getContents(), Transaction.class);
     }
 }

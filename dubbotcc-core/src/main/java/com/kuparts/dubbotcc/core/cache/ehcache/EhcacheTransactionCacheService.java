@@ -1,34 +1,44 @@
 package com.kuparts.dubbotcc.core.cache.ehcache;
 
-import com.kuparts.dubbotcc.core.cache.TransactionCacheService;
-import com.kuparts.dubbotcc.core.cache.TransactionConverter;
-
-import java.util.function.Supplier;
+import com.kuparts.dubbotcc.api.Transaction;
+import com.kuparts.dubbotcc.core.cache.AbstractTransactionCacheService;
 
 /**
  * 用ehcache 实现事务缓存
+ *
  * @author chenbin@kuparts.com
  * @author chenbin
  * @version 1.0
  **/
-public class EhcacheTransactionCacheService implements TransactionCacheService {
+public class EhcacheTransactionCacheService extends AbstractTransactionCacheService {
+
     @Override
-    public Supplier<TransactionConverter> get(String transId) {
+    public Transaction get(String transId) {
         return null;
     }
 
     @Override
-    public void save(Supplier<? extends TransactionConverter> convert) {
+    public void save(Transaction transaction) {
 
     }
 
     @Override
-    public void update(Supplier<? extends TransactionConverter> convert) {
+    public void update(Transaction transaction) {
 
     }
 
     @Override
     public void remove(String transId) {
+
+    }
+
+    @Override
+    protected String getCacheName() {
+        return null;
+    }
+
+    @Override
+    protected void init0(Object obj) {
 
     }
 }

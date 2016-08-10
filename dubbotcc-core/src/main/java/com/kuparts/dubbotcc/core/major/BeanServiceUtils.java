@@ -108,16 +108,31 @@ public class BeanServiceUtils {
         Assert.notNull(beanClazz);
         boolean flag = exitsBean(TccTransactionSpring.class);
         if (!flag) {
-            LOG.error("没有定义com.kuparts.dubbotcc.core.spring.TccTransactionSpring", new TccRuntimeException());
+            LOG.error("com.kuparts.dubbotcc.core.spring.TccTransactionSpring not found", new TccRuntimeException());
             return;
         }
-        BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry) cfgContext.getBeanFactory();
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(beanClazz);
         if (propertys != null) {
             propertys.forEach((k, v) -> builder.addPropertyValue(k, v));
         }
         builder.setScope(BeanDefinition.SCOPE_SINGLETON);
-        beanDefinitionRegistry.registerBeanDefinition(beanName, builder.getBeanDefinition());
+        registerBean(beanName, builder.getBeanDefinition());
+
+    }
+
+    public void registerBean(String beanName, Object obj) {
+        Assert.notNull(beanName);
+        Assert.notNull(obj);
+        cfgContext.getBeanFactory().registerSingleton(beanName, obj);
+    }
+    /**
+     * 注册Bean信息
+     *
+     * @param beanDefinition
+     */
+    public void registerBean(String beanName, BeanDefinition beanDefinition) {
+        BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry) cfgContext.getBeanFactory();
+        beanDefinitionRegistry.registerBeanDefinition(beanName, beanDefinition);
     }
 
     /**
@@ -170,7 +185,7 @@ public class BeanServiceUtils {
     public void setCfgContext(ApplicationContext applicationContext, TccSpringConfig config) throws BeansException {
         cfgContext = (ConfigurableApplicationContext) applicationContext;
         TccConfigBuilder.build(config);
-        registerBean();
+        scannerBean();
         if (initialize == null) {
             initialize = getBean(ServiceInitialize.class);
         }
@@ -180,7 +195,7 @@ public class BeanServiceUtils {
     /**
      * 初始化Bean
      */
-    private void registerBean() {
+    private void scannerBean() {
         //注册自定义枚举实现
         //扫描内部定义springbean
         Scanner scanner = new Scanner((BeanDefinitionRegistry) cfgContext.getBeanFactory());

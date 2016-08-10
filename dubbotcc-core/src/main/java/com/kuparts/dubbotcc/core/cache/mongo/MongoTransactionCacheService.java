@@ -2,16 +2,14 @@ package com.kuparts.dubbotcc.core.cache.mongo;
 
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
+import com.kuparts.dubbotcc.api.Transaction;
+import com.kuparts.dubbotcc.commons.exception.TccRuntimeException;
 import com.kuparts.dubbotcc.commons.utils.Assert;
-import com.kuparts.dubbotcc.core.cache.TransactionCacheService;
-import com.kuparts.dubbotcc.core.cache.TransactionConverter;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kuparts.dubbotcc.core.cache.AbstractTransactionCacheService;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-
-import java.util.function.Supplier;
 
 /**
  * MongoDb存入数据
@@ -20,42 +18,45 @@ import java.util.function.Supplier;
  * @author chenbin
  * @version 1.0
  **/
-public class MongoTransactionCacheService implements TransactionCacheService {
+public class MongoTransactionCacheService extends AbstractTransactionCacheService {
 
     /**
      * mogo对象的数据库操作对象
      */
-    @Autowired
     private MongoTemplate template;
 
-    @Override
-    public TransactionConverter initConverter() {
-        return new MongoTransactionConverter();
-    }
 
     private static final Logger LOG = LoggerFactory.getLogger(MongoTransactionCacheService.class);
     private static final String COLLECTION_NAME = "dubbo_tcc";
     private static final String COLLECTION_NAME_HISTORY = "dubbo_tcc_history";
 
     @Override
-    public void save(Supplier<? extends TransactionConverter> convert) {
-        MongoTransactionCache cache = null;
+    protected void init0(Object obj) {
+        template = (MongoTemplate) obj;
+    }
+
+    @Override
+    public void save(Transaction transaction) {
+        Assert.notNull(transaction);
+        MongoTransactionCache cache;
         try {
-            cache = (MongoTransactionCache) convert.get().convertToCache();
+            cache = (MongoTransactionCache) super.converter.convertToCache(transaction);
         } catch (Exception tccException) {
             LOG.error(tccException.getCause());
+            throw new TccRuntimeException("save transaction error");
         }
         template.save(cache, COLLECTION_NAME);
     }
 
     @Override
-    public void update(Supplier<? extends TransactionConverter> convert) {
-        Assert.notNull(convert);
-        MongoTransactionCache cache = null;
+    public void update(Transaction transaction) {
+        Assert.notNull(transaction);
+        MongoTransactionCache cache;
         try {
-            cache = (MongoTransactionCache) convert.get().convertToCache();
+            cache = (MongoTransactionCache) super.converter.convertToCache(transaction);
         } catch (Exception tccException) {
             LOG.error(tccException.getCause());
+            throw new TccRuntimeException("update transaction error");
         }
         Query query = new Query();
         query.addCriteria(new Criteria("transId").is(cache.getTransId()));
@@ -68,13 +69,18 @@ public class MongoTransactionCacheService implements TransactionCacheService {
     }
 
     @Override
-    public Supplier<TransactionConverter> get(String transId) {
+    public Transaction get(String transId) {
         Assert.notNull(transId);
         Query query = new Query();
         query.addCriteria(new Criteria("transId").is(transId));
         MongoTransactionCache cache = template.findOne(query, MongoTransactionCache.class, COLLECTION_NAME);
-        return () -> new MongoTransactionConverter().initByCache(cache);
+        try {
+            return super.converter.convertByCache(cache);
+        } catch (Exception e) {
+            throw new TccRuntimeException("convert catch to Transaction error");
+        }
     }
+
     /**
      * 清除事务资源..
      * 不是物理上删除,只是放入历史数据中
@@ -91,4 +97,11 @@ public class MongoTransactionCacheService implements TransactionCacheService {
         //查询事务数据
         template.remove(query, COLLECTION_NAME);
     }
+
+    @Override
+    protected String getCacheName() {
+        return "mongo";
+    }
+
+
 }

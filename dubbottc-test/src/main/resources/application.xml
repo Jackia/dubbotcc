@@ -11,9 +11,18 @@
 >
 
     <context:component-scan base-package="com.kp"/>
-    
+
     <bean class="com.kuparts.dubbotcc.core.spring.TccTransactionSpring">
         <property name="cache" value="mongo"/>
         <property name="serializer" value="kryo"/>
+        <property name="configs">
+            <props>
+                <prop key="rollbackQueueMax">200</prop>
+                <prop key="mongoDbName">kp_member</prop>
+                <prop key="mongoDbUrl">10.1.1.101:28885,10.1.1.102:28885,10.1.1.103:28885</prop>
+                <prop key="mongoUserName">dbmember</prop>
+                <prop key="mongoUserPwd">654321</prop>
+            </props>
+        </property>
     </bean>
 </beans>

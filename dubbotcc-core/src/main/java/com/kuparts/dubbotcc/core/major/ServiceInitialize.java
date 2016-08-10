@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.kuparts.dubbotcc.api.CompensationCallback;
 import com.kuparts.dubbotcc.commons.exception.TccRuntimeException;
 import com.kuparts.dubbotcc.core.cache.TransactionCacheService;
+import com.kuparts.dubbotcc.core.cache.config.CacheApplicationContext;
 import com.kuparts.dubbotcc.core.config.TccExtConfig;
 import com.kuparts.dubbotcc.core.rollback.CallbackService;
 import com.kuparts.dubbotcc.core.rollback.RollbackService;
@@ -15,11 +16,9 @@ import com.kuparts.dubbotcc.core.rollback.task.DefaultTask;
 import com.kuparts.dubbotcc.core.serializer.SerializerFactory;
 import com.kuparts.dubbotcc.core.spring.TCCC;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 
@@ -47,41 +46,46 @@ public class ServiceInitialize {
     @Autowired
     CallbackService callbackService;
 
-    private ApplicationContext cfgContext;
+    private ConfigurableApplicationContext cfgContext;
 
     /**
      * 初始化服务
      */
-    public void init(ApplicationContext applicationContext) {
+    public void init(ConfigurableApplicationContext applicationContext) {
         this.cfgContext = applicationContext;
         //合并回调方法信息
-        rollback.listerQueue();
         serializerFactory.initFactory();
+        initCache();
+        rollback.listerQueue();
         loadCallback();
     }
 
-    @PostConstruct
-    public void before() {
-        initCache();
-    }
 
     /**
      * 获取扩展对象
      */
     public void initCache() {
         TransactionCacheService service;
+        String cacheConfig;
         if (StringUtils.isBlank(config.getCache())) {
             service = ExtensionLoader.getExtensionLoader(TransactionCacheService.class).getDefaultExtension();
+            cacheConfig = ExtensionLoader.getExtensionLoader(CacheApplicationContext.class).getDefaultExtensionName();
         } else {
             service = ExtensionLoader.getExtensionLoader(TransactionCacheService.class).getExtension(config.getCache());
             if (service == null) {
-                LOG.error("没有加载到缓存对象..cache is null", new TccRuntimeException());
+                LOG.error("没有加载到缓存对象..cache is null");
                 throw new TccRuntimeException("没有加载到缓存对象..cache is null");
             }
+            cacheConfig = config.getCache();
         }
-        BeanServiceUtils.getInstance().registerBean(TransactionCacheService.class.getName(), service.getClass());
+        if (StringUtils.isBlank(cacheConfig)) {
+            LOG.error("cacheApplicationContext is null");
+            throw new TccRuntimeException("cacheApplicationContext is null");
+        }
+        config.setCache(cacheConfig);
+        service.init(cfgContext, config);
+        BeanServiceUtils.getInstance().registerBean(TransactionCacheService.class.getName(), service);
     }
-
 
     /**
      * 加载回调

@@ -103,10 +103,5 @@
             <artifactId>hessian</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.dyuproject.protostuff</groupId>
-            <artifactId>protostuff</artifactId>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 </project>

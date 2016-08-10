@@ -1,8 +1,9 @@
 package com.kuparts.dubbotcc.core.cache;
 
 import com.alibaba.dubbo.common.extension.SPI;
-
-import java.util.function.Supplier;
+import com.kuparts.dubbotcc.api.Transaction;
+import com.kuparts.dubbotcc.core.config.TccExtConfig;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * 真正的数据操作层...
@@ -15,26 +16,34 @@ import java.util.function.Supplier;
 @SPI("mongo")
 public interface TransactionCacheService {
     /**
+     * 初始化
+     *
+     * @param context
+     * @param config
+     */
+    void init(ConfigurableApplicationContext context, TccExtConfig config);
+
+    /**
      * 获取一个事务信息
      *
      * @param transId 事务ID
      * @return 事务转换对象
      */
-    Supplier<TransactionConverter> get(String transId);
+    Transaction get(String transId);
 
     /**
      * 存储一个事务
      *
-     * @param convert 事务转换对象
+     * @param transaction 事务
      */
-    void save(Supplier<? extends TransactionConverter> convert);
+    void save(Transaction transaction);
 
     /**
      * 修改事务对象.
      *
-     * @param convert 转换对象
+     * @param transaction 事务
      */
-    void update(Supplier<? extends TransactionConverter> convert);
+    void update(Transaction transaction);
 
     /**
      * 清除一个事务...
@@ -42,13 +51,5 @@ public interface TransactionCacheService {
      * @param transId 事务ID
      */
     void remove(String transId);
-    /**
-     * 初始化一下转换器</pr>
-     * 适用于KEY/Value结构
-     * KEY,transID
-     * Value,序列化对象
-     */
-    default TransactionConverter initConverter() {
-        return new DefaultTransactionConverter();
-    }
+
 }

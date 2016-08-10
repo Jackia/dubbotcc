@@ -17,27 +17,26 @@ import java.util.concurrent.CopyOnWriteArrayList;
  **/
 public class MongoTransactionConverter extends TransactionConverter<MongoTransactionCache> {
 
-
     @Override
-    public MongoTransactionCache convertToCache() throws Exception {
+    public MongoTransactionCache convertToCache(Transaction transaction) throws Exception {
         MongoTransactionCache cache = new MongoTransactionCache();
-        cache.setStatus(getTransaction().getStatus().name());
-        cache.setTransId(getTransaction().getTransId());
-        cache.setStartTime(getTransaction().getStartTime());
-        byte[] bytes = getSerializer().serialize(getTransaction().getPotins());
+        cache.setStatus(transaction.getStatus().name());
+        cache.setTransId(transaction.getTransId());
+        cache.setStartTime(transaction.getStartTime());
+        byte[] bytes = serializer.serialize(transaction.getPotins());
         cache.setContents(bytes);
         return cache;
     }
 
     @Override
-    public Transaction convertByCache() throws Exception {
-        MongoTransactionCache cache = getTransactionCache();
+    public Transaction convertByCache(MongoTransactionCache cache) throws Exception {
         TransactionStatus status = TransactionStatus.valueOf(cache.getStatus());
-        List<TccServicePoint> list = getSerializer()
+        List<TccServicePoint> list = serializer
                 .deSerialize(cache.getContents(), CopyOnWriteArrayList.class);
         return new Transaction(
                 cache.getTransId(),
                 cache.getStartTime(),
                 status, list);
     }
+
 }

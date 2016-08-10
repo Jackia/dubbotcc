@@ -5,8 +5,6 @@ import com.alibaba.dubbo.common.utils.StringUtils;
 import com.kuparts.dubbotcc.core.config.TccExtConfig;
 import com.kuparts.dubbotcc.core.major.BeanServiceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 /**
@@ -22,6 +20,7 @@ public class SerializerFactory {
 
     @Autowired
     TccExtConfig config;
+
     /**
      * 初始化一个序列化对象
      */
@@ -32,6 +31,6 @@ public class SerializerFactory {
         } else {
             serializer = ExtensionLoader.getExtensionLoader(ObjectSerializer.class).getExtension(config.getSerializer());
         }
-        BeanServiceUtils.getInstance().registerBean(ObjectSerializer.class.getName(),serializer.getClass());
+        BeanServiceUtils.getInstance().registerBean(ObjectSerializer.class.getName(), serializer);
     }
 }

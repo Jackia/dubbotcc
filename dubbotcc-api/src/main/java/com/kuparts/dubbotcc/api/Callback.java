@@ -18,6 +18,19 @@ public class Callback {
     private String className;
 
     private Mark mark;
+
+    public Callback() {
+    }
+
+    public Callback(Mark mark, Method method, Class callClazz, Object bean) {
+        this.mark = mark;
+        this.method = method;
+        this.callClazz = callClazz;
+        this.bean = bean;
+        this.methodName = method.getName();
+        this.className = callClazz.getName();
+    }
+
     /**
      * 方法
      */
@@ -78,6 +91,7 @@ public class Callback {
     public void setBean(Object bean) {
         this.bean = bean;
     }
+
     /**
      * 标识
      */
