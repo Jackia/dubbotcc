@@ -1,10 +1,10 @@
 package com.kuparts.dubbotcc.core.cache.config;
 
 import com.google.common.base.Splitter;
+import com.kuparts.dubbotcc.commons.config.TccExtConfig;
 import com.kuparts.dubbotcc.commons.utils.Assert;
 import com.kuparts.dubbotcc.core.cache.TransactionConverter;
 import com.kuparts.dubbotcc.core.cache.mongo.MongoTransactionConverter;
-import com.kuparts.dubbotcc.core.config.TccExtConfig;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;

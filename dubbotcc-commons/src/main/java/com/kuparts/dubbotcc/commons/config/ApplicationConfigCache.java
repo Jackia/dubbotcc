@@ -1,4 +1,4 @@
-package com.kuparts.dubbotcc.core.config;
+package com.kuparts.dubbotcc.commons.config;
 
 import com.alibaba.dubbo.config.ReferenceConfig;
 import com.google.common.cache.CacheBuilder;

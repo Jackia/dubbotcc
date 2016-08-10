@@ -2,7 +2,8 @@ package com.kuparts.dubbotcc.core.major;
 
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
-import com.kuparts.dubbotcc.api.Transaction;
+import com.kuparts.dubbotcc.commons.api.Transaction;
+import com.kuparts.dubbotcc.commons.bean.BeanServiceUtils;
 import com.kuparts.dubbotcc.commons.emuns.ServicePointStatus;
 import com.kuparts.dubbotcc.commons.emuns.TransactionStatus;
 import com.kuparts.dubbotcc.commons.utils.Assert;

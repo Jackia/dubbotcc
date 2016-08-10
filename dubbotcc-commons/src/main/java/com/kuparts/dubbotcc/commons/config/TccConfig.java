@@ -1,9 +1,9 @@
-package com.kuparts.dubbotcc.core.config;
+package com.kuparts.dubbotcc.commons.config;
 
-import com.kuparts.dubbotcc.api.CompensationCallback;
+
+import com.kuparts.dubbotcc.commons.api.CompensationCallback;
 
 import java.util.List;
-import java.util.Properties;
 
 /**
  * 需要支持的配置信息.
@@ -13,6 +13,14 @@ import java.util.Properties;
  * @version 1.0
  **/
 public class TccConfig {
+    /**
+     * dubbo客户端名称
+     */
+    private String application;
+    /**
+     * zookeeper地址
+     */
+    private String zookurl;
     /**
      * 提供不同的序列化对象
      */
@@ -54,4 +62,19 @@ public class TccConfig {
         this.callbacks = callbacks;
     }
 
+    public void setApplication(String application) {
+        this.application = application;
+    }
+
+    public void setZookurl(String zookurl) {
+        this.zookurl = zookurl;
+    }
+
+    public String getApplication() {
+        return application;
+    }
+
+    public String getZookurl() {
+        return zookurl;
+    }
 }

@@ -1,6 +1,7 @@
 package com.kuparts.dubbotcc.core.rollback;
 
-import com.kuparts.dubbotcc.api.Transaction;
+
+import com.kuparts.dubbotcc.commons.api.Transaction;
 
 /**
  * 回滚命令定义

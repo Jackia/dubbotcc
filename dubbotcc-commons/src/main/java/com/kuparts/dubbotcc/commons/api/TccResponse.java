@@ -1,7 +1,6 @@
-package com.kuparts.dubbotcc.api;
+package com.kuparts.dubbotcc.commons.api;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
  * 回调信息返回

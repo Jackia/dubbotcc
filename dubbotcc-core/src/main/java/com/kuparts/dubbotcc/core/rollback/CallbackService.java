@@ -6,12 +6,12 @@ import com.alibaba.dubbo.common.utils.StringUtils;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.reflect.Reflection;
-import com.kuparts.dubbotcc.api.Callback;
-import com.kuparts.dubbotcc.api.CompensationCallback;
-import com.kuparts.dubbotcc.api.TccResponse;
+import com.kuparts.dubbotcc.commons.api.Callback;
+import com.kuparts.dubbotcc.commons.api.CompensationCallback;
+import com.kuparts.dubbotcc.commons.api.TccResponse;
+import com.kuparts.dubbotcc.commons.bean.TCCC;
+import com.kuparts.dubbotcc.commons.bean.TcccMethod;
 import com.kuparts.dubbotcc.commons.utils.Assert;
-import com.kuparts.dubbotcc.core.spring.TCCC;
-import com.kuparts.dubbotcc.core.spring.TcccMethod;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationHandler;

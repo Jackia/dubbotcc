@@ -1,4 +1,4 @@
-package com.kuparts.dubbotcc.core.config;
+package com.kuparts.dubbotcc.commons.config;
 
 /**
  * 配置文件常量定义..

@@ -1,6 +1,7 @@
 package com.kuparts.dubbotcc.core.cache;
 
-import com.kuparts.dubbotcc.api.Transaction;
+
+import com.kuparts.dubbotcc.commons.api.Transaction;
 
 /**
  * 实现一个默认转换器..

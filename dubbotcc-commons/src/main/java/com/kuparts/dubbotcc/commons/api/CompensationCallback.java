@@ -1,4 +1,4 @@
-package com.kuparts.dubbotcc.api;
+package com.kuparts.dubbotcc.commons.api;
 
 /**
  * 处理结果异步回调

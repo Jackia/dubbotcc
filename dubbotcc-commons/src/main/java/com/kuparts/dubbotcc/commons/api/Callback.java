@@ -1,4 +1,4 @@
-package com.kuparts.dubbotcc.api;
+package com.kuparts.dubbotcc.commons.api;
 
 import java.lang.reflect.Method;
 

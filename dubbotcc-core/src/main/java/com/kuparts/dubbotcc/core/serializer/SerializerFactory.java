@@ -2,8 +2,8 @@ package com.kuparts.dubbotcc.core.serializer;
 
 import com.alibaba.dubbo.common.extension.ExtensionLoader;
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.kuparts.dubbotcc.core.config.TccExtConfig;
-import com.kuparts.dubbotcc.core.major.BeanServiceUtils;
+import com.kuparts.dubbotcc.commons.bean.BeanServiceUtils;
+import com.kuparts.dubbotcc.commons.config.TccExtConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

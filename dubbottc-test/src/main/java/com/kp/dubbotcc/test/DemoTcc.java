@@ -1,9 +1,9 @@
 package com.kp.dubbotcc.test;
 
 
-import com.kuparts.dubbotcc.api.TccResponse;
-import com.kuparts.dubbotcc.core.spring.TCCC;
-import com.kuparts.dubbotcc.core.spring.TcccMethod;
+import com.kuparts.dubbotcc.commons.api.TccResponse;
+import com.kuparts.dubbotcc.commons.bean.TCCC;
+import com.kuparts.dubbotcc.commons.bean.TcccMethod;
 
 /**
  * @author chenbin@kuparts.com

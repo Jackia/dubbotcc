@@ -2,10 +2,10 @@ package com.kuparts.dubbotcc.core.rollback;
 
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
-import com.kuparts.dubbotcc.api.Callback;
-import com.kuparts.dubbotcc.api.Transaction;
+import com.kuparts.dubbotcc.commons.api.Callback;
+import com.kuparts.dubbotcc.commons.api.Transaction;
+import com.kuparts.dubbotcc.commons.config.TccExtConfig;
 import com.kuparts.dubbotcc.commons.utils.Assert;
-import com.kuparts.dubbotcc.core.config.TccExtConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +26,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Component
 public class RollbackService {
     private static final Logger LOG = LoggerFactory.getLogger(RollbackService.class);
+    @Autowired
+    protected TccExtConfig confg;
     /**
+     * /**
      * 线程池大小
      */
     private int MAX_THREAD;
@@ -51,8 +54,6 @@ public class RollbackService {
         }
     }
 
-    @Autowired
-    protected TccExtConfig confg;
     /**
      * 需要回滚的事务队列
      */
@@ -94,6 +95,7 @@ public class RollbackService {
             }
         });
     }
+
     /**
      * 线程执行器
      */

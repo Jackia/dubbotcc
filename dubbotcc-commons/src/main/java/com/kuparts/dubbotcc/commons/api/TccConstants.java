@@ -1,4 +1,4 @@
-package com.kuparts.dubbotcc.api;
+package com.kuparts.dubbotcc.commons.api;
 
 /**
  * 保存系统常量信息

@@ -1,4 +1,5 @@
-package com.kuparts.dubbotcc.core.spring;
+package com.kuparts.dubbotcc.commons.bean;
+
 
 import org.springframework.stereotype.Component;
 

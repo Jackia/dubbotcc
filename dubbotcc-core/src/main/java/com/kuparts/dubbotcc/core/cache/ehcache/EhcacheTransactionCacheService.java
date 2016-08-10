@@ -1,6 +1,6 @@
 package com.kuparts.dubbotcc.core.cache.ehcache;
 
-import com.kuparts.dubbotcc.api.Transaction;
+import com.kuparts.dubbotcc.commons.api.Transaction;
 import com.kuparts.dubbotcc.core.cache.AbstractTransactionCacheService;
 
 /**

@@ -1,7 +1,7 @@
 package com.kuparts.dubbotcc.core.cache.mongo;
 
-import com.kuparts.dubbotcc.api.TccServicePoint;
-import com.kuparts.dubbotcc.api.Transaction;
+import com.kuparts.dubbotcc.commons.api.TccServicePoint;
+import com.kuparts.dubbotcc.commons.api.Transaction;
 import com.kuparts.dubbotcc.commons.emuns.TransactionStatus;
 import com.kuparts.dubbotcc.core.cache.TransactionConverter;
 

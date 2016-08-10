@@ -1,8 +1,9 @@
-package com.kuparts.dubbotcc.core.spring;
+package com.kuparts.dubbotcc.supervise.spring;
 
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
-import com.kuparts.dubbotcc.core.major.BeanServiceUtils;
+import com.kuparts.dubbotcc.commons.config.TccSpringConfig;
+import com.kuparts.dubbotcc.core.major.BeanUtilsFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -21,6 +22,6 @@ public class TccTransactionSpring extends TccSpringConfig implements Application
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        BeanServiceUtils.getInstance().setCfgContext(applicationContext, this);
+        new BeanUtilsFactory().loadBean(applicationContext, this);
     }
 }

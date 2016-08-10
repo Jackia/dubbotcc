@@ -5,19 +5,20 @@ import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.common.utils.StringUtils;
 import com.google.common.collect.Lists;
-import com.kuparts.dubbotcc.api.CompensationCallback;
+import com.kuparts.dubbotcc.commons.api.CompensationCallback;
+import com.kuparts.dubbotcc.commons.bean.BeanServiceUtils;
+import com.kuparts.dubbotcc.commons.bean.TCCC;
+import com.kuparts.dubbotcc.commons.config.TccExtConfig;
 import com.kuparts.dubbotcc.commons.exception.TccRuntimeException;
 import com.kuparts.dubbotcc.core.cache.TransactionCacheService;
 import com.kuparts.dubbotcc.core.cache.config.CacheApplicationContext;
-import com.kuparts.dubbotcc.core.config.TccExtConfig;
 import com.kuparts.dubbotcc.core.rollback.CallbackService;
 import com.kuparts.dubbotcc.core.rollback.RollbackService;
 import com.kuparts.dubbotcc.core.rollback.task.DefaultTask;
 import com.kuparts.dubbotcc.core.serializer.SerializerFactory;
-import com.kuparts.dubbotcc.core.spring.TCCC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,7 @@ import java.util.Map;
  * @author chenbin
  * @version 1.0
  **/
-@Component
+@Service
 public class ServiceInitialize {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServiceInitialize.class);
@@ -120,8 +121,8 @@ public class ServiceInitialize {
      * 加载回调方法实体
      *
      * @param beans beans对象
-     * @see com.kuparts.dubbotcc.core.spring.TCCC
-     * @see com.kuparts.dubbotcc.core.spring.TcccMethod
+     * @see com.kuparts.dubbotcc.commons.bean.TCCC
+     * @see com.kuparts.dubbotcc.commons.bean.TcccMethod
      */
     public void loadCallback(Map<String, Object> beans) {
         if (beans == null) return;
@@ -131,8 +132,8 @@ public class ServiceInitialize {
     /**
      * 加载配置文件文件
      *
-     * @see com.kuparts.dubbotcc.core.config.TccConfig
-     * @see com.kuparts.dubbotcc.core.spring.TccSpringConfig
+     * @see com.kuparts.dubbotcc.commons.bean.TCCC
+     * @see com.kuparts.dubbotcc.commons.bean.TcccMethod
      */
     public void loadCallbackByConfig() {
         callbackService.fullCallback(config.getCallbacks());

@@ -1,4 +1,4 @@
-package com.kuparts.dubbotcc.core.spring;
+package com.kuparts.dubbotcc.commons.bean;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -69,7 +69,7 @@ public class TransactionFilterTest {
 
     @Test
     public void getConfig() {
-        String url = "dubbo://localhost:20924/com.kp.facade.auth.service.ResourceService?application=kp-service-api-c&check=false&dubbo=2.8.4&group=auth&interface=com.kp.facade.auth.service.ResourceService&logger=slf4j&methods=validateMethod,tccValidateMethod,validateAll,validateScope,validateLogin&pid=200420&retries=0&revision=0.0.1&side=consumer&timestamp=1470466885203&version=0.0.1";
+        String url = "dubbo://localhost:20924/com.kp.facade.auth.service.ResourceService?application=kp-service-propety-c&check=false&dubbo=2.8.4&group=auth&interface=com.kp.facade.auth.service.ResourceService&logger=slf4j&methods=validateMethod,tccValidateMethod,validateAll,validateScope,validateLogin&pid=200420&retries=0&revision=0.0.1&side=consumer&timestamp=1470466885203&version=0.0.1";
         ReferenceConfig reference = new ReferenceConfig();
         reference.setUrl(url);
         reference.get();

@@ -7,17 +7,26 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>dubbotcc-test</artifactId>
+    <artifactId>dubbotcc-supervise</artifactId>
     <packaging>jar</packaging>
 
-    <name>dubbotcc-test</name>
+    <name>dubbotcc-supervise</name>
     <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
     <dependencies>
+        <dependency>
+            <groupId>com.kuparts.dubbotcc</groupId>
+            <artifactId>dubbotcc-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kuparts.dubbotcc</groupId>
+            <artifactId>dubbotcc-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -27,15 +36,18 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>dubbo</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+            <scope>provided</scope>
         </dependency>
         <!-- Spring Dependency Begin -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -45,10 +57,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-mongodb</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -71,24 +85,27 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.kuparts.dubbotcc</groupId>
-            <artifactId>dubbotcc-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.kuparts.dubbotcc</groupId>
-            <artifactId>dubbotcc-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-client</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.101tec</groupId>
@@ -96,18 +113,8 @@
             <version>0.7</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.zookeeper</groupId>
-            <artifactId>zookeeper</artifactId>
-            <version>3.4.6</version>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty</artifactId>
-            <version>3.10.5.Final</version>
-        </dependency>
-        <dependency>
             <groupId>com.kuparts.dubbotcc</groupId>
-            <artifactId>dubbotcc-supervise</artifactId>
+            <artifactId>dubbotcc-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

@@ -1,7 +1,7 @@
 package com.kuparts.dubbotcc.core.cache.config;
 
 import com.alibaba.dubbo.common.extension.SPI;
-import com.kuparts.dubbotcc.core.config.TccExtConfig;
+import com.kuparts.dubbotcc.commons.config.TccExtConfig;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**

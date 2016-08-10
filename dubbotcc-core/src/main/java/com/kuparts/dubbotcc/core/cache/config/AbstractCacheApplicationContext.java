@@ -1,9 +1,9 @@
 package com.kuparts.dubbotcc.core.cache.config;
 
+import com.kuparts.dubbotcc.commons.bean.BeanServiceUtils;
+import com.kuparts.dubbotcc.commons.config.TccExtConfig;
 import com.kuparts.dubbotcc.commons.utils.Assert;
 import com.kuparts.dubbotcc.core.cache.TransactionConverter;
-import com.kuparts.dubbotcc.core.config.TccExtConfig;
-import com.kuparts.dubbotcc.core.major.BeanServiceUtils;
 import com.kuparts.dubbotcc.core.serializer.ObjectSerializer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;

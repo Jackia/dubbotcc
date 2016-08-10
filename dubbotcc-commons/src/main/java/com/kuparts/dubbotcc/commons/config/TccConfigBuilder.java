@@ -1,10 +1,9 @@
-package com.kuparts.dubbotcc.core.config;
+package com.kuparts.dubbotcc.commons.config;
 
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
-import com.kuparts.dubbotcc.core.major.BeanServiceUtils;
-import com.kuparts.dubbotcc.core.spring.TccSpringConfig;
-import com.kuparts.dubbotcc.core.spring.TccTransactionSpring;
+import com.alibaba.dubbo.common.utils.StringUtils;
+import com.kuparts.dubbotcc.commons.bean.BeanServiceUtils;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -27,7 +26,7 @@ import java.util.stream.Collectors;
 public class TccConfigBuilder {
 
 
-    private static final Logger LOG = LoggerFactory.getLogger(TccTransactionSpring.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TccConfigBuilder.class);
 
     /**
      * 构建系统的配制信息
@@ -35,10 +34,12 @@ public class TccConfigBuilder {
      * @param config 全局配制信息
      */
     public static void build(TccSpringConfig config) {
-        //注册到bean
-        TccExtConfig tccExtConfig = mergeConfig(config);
         try {
-            Map<String, Object> mapValues = BeanServiceUtils.transBean2Map(tccExtConfig);
+            //加载当前dubbo信息
+            TccApplicationConfig.getInstance().currentDubbo();
+            //注册到bean
+            TccExtConfig tccExtConfig = mergeConfig(config);
+            //加载用户事务配置信息
             BeanServiceUtils.getInstance().registerBean(TccExtConfig.class.getName(), tccExtConfig);
         } catch (Exception e) {
             LOG.error("loader properties error ," + e.getMessage());
@@ -85,6 +86,15 @@ public class TccConfigBuilder {
         //监听队列线程数
         if (extconf.getRollbackThreadMax() <= 0) {
             extconf.setRollbackThreadMax(Runtime.getRuntime().availableProcessors() << 1);
+        }
+        //判断zookper信息
+        if (StringUtils.isBlank(extconf.getApplication())) {
+            String app = TccApplicationConfig.getInstance().getApplicationConfig().getName();
+            extconf.setApplication(app);
+        }
+        if (StringUtils.isBlank(extconf.getZookurl())) {
+            String app = TccApplicationConfig.getInstance().getRegistryConfig().getAddress();
+            extconf.setApplication(app);
         }
     }
 

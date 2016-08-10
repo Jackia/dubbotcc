@@ -2,8 +2,8 @@ package com.kuparts.dubbotcc.core.rollback.task;
 
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
-import com.kuparts.dubbotcc.api.CompensationCallback;
-import com.kuparts.dubbotcc.api.TccResponse;
+import com.kuparts.dubbotcc.commons.api.CompensationCallback;
+import com.kuparts.dubbotcc.commons.api.TccResponse;
 import com.kuparts.dubbotcc.commons.utils.Assert;
 import com.kuparts.dubbotcc.core.cache.TransactionCacheService;
 import com.kuparts.dubbotcc.core.major.TransactionFilter;

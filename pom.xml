@@ -12,6 +12,7 @@
         <module>dubbotcc-commons</module>
         <module>dubbotcc-core</module>
         <module>dubbotcc-api</module>
+        <module>dubbotcc-supervise</module>
     </modules>
     <distributionManagement>
         <repository>
@@ -34,6 +35,7 @@
         <spring.data.mongodb.version>1.9.1.RELEASE</spring.data.mongodb.version>
         <hessian.version>4.0.38</hessian.version>
         <protostuff.version>1.0.8</protostuff.version>
+        <curator.version>2.9.1</curator.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -163,6 +165,11 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-client</artifactId>
+                <version>${curator.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-beanutils</groupId>

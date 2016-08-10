@@ -2,7 +2,7 @@ package com.kuparts.dubbotcc.core.cache.mongo;
 
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
-import com.kuparts.dubbotcc.api.Transaction;
+import com.kuparts.dubbotcc.commons.api.Transaction;
 import com.kuparts.dubbotcc.commons.exception.TccRuntimeException;
 import com.kuparts.dubbotcc.commons.utils.Assert;
 import com.kuparts.dubbotcc.core.cache.AbstractTransactionCacheService;

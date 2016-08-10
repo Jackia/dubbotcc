@@ -1,10 +1,7 @@
-package com.kuparts.dubbotcc.core.spring;
+package com.kuparts.dubbotcc.commons.config;
 
-import com.kuparts.dubbotcc.api.CompensationCallback;
-import com.kuparts.dubbotcc.core.config.TccConfig;
 import org.springframework.core.io.Resource;
 
-import java.util.List;
 import java.util.Properties;
 
 /**
