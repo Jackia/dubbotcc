@@ -1,6 +1,4 @@
-package com.kuparts.dubbotcc.supervise.core;
-
-import com.kuparts.dubbotcc.supervise.propety.Actor;
+package com.kuparts.dubbotcc.supervise.api;
 
 /**
  * 管理者具体接口定义
@@ -12,7 +10,7 @@ import com.kuparts.dubbotcc.supervise.propety.Actor;
 public interface Supervise {
     /**
      * 通知管理者
-     * @param actor 管理者信息
+     *
      */
-    void notice(Actor actor);
+    void notice();
 }

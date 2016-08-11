@@ -16,7 +16,7 @@ public class SpringLoadTest {
 
     @Test
     public void test() {
-        String va = "com.kp.core.cccccc";
+        String va = "com.kp.api.cccccc";
         List<String> result = Splitter.on(".").limit(3).splitToList(va);
         System.out.println(Joiner.on(".").join(result.subList(0,2)));
 

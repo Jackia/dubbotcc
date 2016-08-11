@@ -2,6 +2,8 @@ package com.kp.dubbotcc.test;
 
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 /**
  * @author chenbin@kuparts.com
  * @author chenbin
@@ -9,7 +11,12 @@ import org.springframework.stereotype.Component;
  **/
 @Component
 public class DemoSpring {
-    public void print(){
+    public void print() {
         System.out.println("jjjjjjjjjjjjjjjjj");
+    }
+
+    @PostConstruct
+    public void init() {
+        System.out.println("iiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
     }
 }

@@ -36,13 +36,15 @@ public class BeanUtilsFactory implements TccBeanFactory {
 
     @Override
     public void loadBean(ApplicationContext context, TccSpringConfig config) {
-        cfgContext = (ConfigurableApplicationContext) context;
-        BeanServiceUtils.getInstance().setCfgContext(cfgContext);
-        TccConfigBuilder.build(config);
-        scannerBean();
-        if (initialize == null) {
-            initialize = BeanServiceUtils.getInstance().getBean(ServiceInitialize.class);
+        synchronized (SCAN_PACKAGE) {
+            cfgContext = (ConfigurableApplicationContext) context;
+            BeanServiceUtils.getInstance().setCfgContext(cfgContext);
+            TccConfigBuilder.build(config);
+            scannerBean();
+            if (initialize == null) {
+                initialize = BeanServiceUtils.getInstance().getBean(ServiceInitialize.class);
+            }
+            initialize.init(cfgContext);
         }
-        initialize.init(cfgContext);
     }
 }

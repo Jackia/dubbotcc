@@ -34,10 +34,6 @@ public class TccConfig {
      */
     private List<CompensationCallback> callbacks;
 
-
-    //get() set() method ==========
-
-
     public String getSerializer() {
         return serializer;
     }

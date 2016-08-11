@@ -81,11 +81,11 @@ public class TccConfigBuilder {
         //检查并设置默认值
         //回滚队列数
         if (extconf.getRollbackQueueMax() <= 0) {
-            extconf.setRollbackQueueMax(5000);
+            extconf.setRollbackQueueMax(TccExtConfigConstants.DEFAULT_ROLLBACK_QUEUE_MAX);
         }
         //监听队列线程数
         if (extconf.getRollbackThreadMax() <= 0) {
-            extconf.setRollbackThreadMax(Runtime.getRuntime().availableProcessors() << 1);
+            extconf.setRollbackThreadMax(TccExtConfigConstants.DEFAULT_ROLLBACK_THREAD_MAX);
         }
         //判断zookper信息
         if (StringUtils.isBlank(extconf.getApplication())) {
@@ -109,11 +109,14 @@ public class TccConfigBuilder {
         Map<String, Object> valueMap = Arrays.stream(fields).map(e -> {
             String fieldValue = null;
             try {
-                fieldValue = (String) FieldUtils.readStaticField(e);
-                MapEntity entiy = new MapEntity();
-                entiy.setKey(fieldValue);
-                entiy.setValue(properties.get(fieldValue));
-                return entiy;
+                if (!e.getName().startsWith("DEFAULT_")) {
+                    fieldValue = (String) FieldUtils.readStaticField(e);
+                    MapEntity entiy = new MapEntity();
+                    entiy.setKey(fieldValue);
+                    entiy.setValue(properties.get(fieldValue));
+                    return entiy;
+                }
+                return null;
             } catch (IllegalAccessException e1) {
                 LOG.error("loader properties error ," + e1.getMessage());
                 return null;

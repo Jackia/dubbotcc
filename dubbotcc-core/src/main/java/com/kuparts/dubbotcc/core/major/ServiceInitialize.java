@@ -53,15 +53,18 @@ public class ServiceInitialize {
      * 初始化服务
      */
     public void init(ConfigurableApplicationContext applicationContext) {
-        this.cfgContext = applicationContext;
-        //合并回调方法信息
-        serializerFactory.initFactory();
-        initCache();
-        rollback.listerQueue();
-        loadCallback();
+        try {
+            this.cfgContext = applicationContext;
+            //合并回调方法信息
+            serializerFactory.initFactory();
+            initCache();
+            rollback.listerQueue();
+            loadCallback();
+        } catch (RuntimeException ex) {
+            LOG.error(ex.getMessage(), ex.getCause());
+            System.exit(1);//非正常关闭
+        }
     }
-
-
     /**
      * 获取扩展对象
      */

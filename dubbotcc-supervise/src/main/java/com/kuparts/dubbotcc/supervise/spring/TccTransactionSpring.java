@@ -22,6 +22,7 @@ public class TccTransactionSpring extends TccSpringConfig implements Application
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        LOG.info("start dubbotcc.......................");
         new BeanUtilsFactory().loadBean(applicationContext, this);
     }
 }

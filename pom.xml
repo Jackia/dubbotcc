@@ -36,6 +36,7 @@
         <hessian.version>4.0.38</hessian.version>
         <protostuff.version>1.0.8</protostuff.version>
         <curator.version>2.9.1</curator.version>
+        <nettty.version>4.0.20.Final</nettty.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -186,6 +187,11 @@
                 <groupId>com.caucho</groupId>
                 <artifactId>hessian</artifactId>
                 <version>${hessian.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${nettty.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

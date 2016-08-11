@@ -80,7 +80,7 @@ public class CallbackService {
     }
 
     /**
-     * 获取全类名,前缀 com.kuparts.core // com.kuparts
+     * 获取全类名,前缀 com.kuparts.api // com.kuparts
      *
      * @param className
      * @return
