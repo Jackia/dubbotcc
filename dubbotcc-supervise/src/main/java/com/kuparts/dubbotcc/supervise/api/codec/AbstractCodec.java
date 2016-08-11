@@ -1,8 +1,9 @@
 package com.kuparts.dubbotcc.supervise.api.codec;
 
+import com.alibaba.dubbo.common.extension.ExtensionLoader;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
-import com.kuparts.dubbotcc.core.serializer.KryoSerializer;
+import com.kuparts.dubbotcc.commons.utils.Assert;
 import com.kuparts.dubbotcc.core.serializer.ObjectSerializer;
 
 /**
@@ -15,8 +16,7 @@ public abstract class AbstractCodec implements Codec {
 
     //设置序列化ID
     public ObjectSerializer getSer(String sid) {
-        return new KryoSerializer();
-        //        Assert.notNull(sid);
-//        return ExtensionLoader.getExtensionLoader(ObjectSerializer.class).getLoadedExtension(sid);
+        Assert.notNull(sid);
+        return ExtensionLoader.getExtensionLoader(ObjectSerializer.class).getLoadedExtension(sid);
     }
 }

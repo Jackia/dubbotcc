@@ -4,6 +4,7 @@ import com.alibaba.dubbo.common.extension.ExtensionLoader;
 import com.alibaba.dubbo.common.utils.StringUtils;
 import com.kuparts.dubbotcc.commons.bean.BeanServiceUtils;
 import com.kuparts.dubbotcc.commons.config.TccExtConfig;
+import com.kuparts.dubbotcc.commons.utils.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -54,9 +55,8 @@ public class SerializerFactory {
      * @return
      */
     public static int getSerId(String serStr) {
-        return 1;
-       /* Assert.notNull(serStr);
-        return SERIDS.get(serStr);*/
+        Assert.notNull(serStr);
+        return SERIDS.get(serStr);
     }
 
     /**
@@ -66,8 +66,7 @@ public class SerializerFactory {
      * @return
      */
     public static String getStrs(int id) {
-        return "kryo";
-        /*Assert.checkConditionArgument(id >= 0, "id is error");
-        return STRSTRS.get(id);*/
+        Assert.checkConditionArgument(id >= 0, "id is error");
+        return STRSTRS.get(id);
     }
 }
