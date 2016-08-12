@@ -17,6 +17,11 @@ public class SuperviseServiceEventListener implements TChannelEventListener {
     }
 
     @Override
+    public void channelIdle(String address, TChannel tChannel) throws Exception {
+
+    }
+
+    @Override
     public void channelActive(String address, TChannel tChannel) throws Exception {
 
     }

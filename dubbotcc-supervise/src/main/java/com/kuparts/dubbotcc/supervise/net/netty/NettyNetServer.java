@@ -161,8 +161,8 @@ public class NettyNetServer extends AbstractNetServer {
                     NetHelper.closeChannel(channel);
                 }
                 if (listener != null) {
-                    TNetEvent event = new TNetEvent(EventType.IDLE, address, channel);
-                    addEvent(event);
+                    TNetEvent netEvent = new TNetEvent(EventType.IDLE, address, channel);
+                    addEvent(netEvent);
                 }
             }
             super.userEventTriggered(ctx, evt);

@@ -136,8 +136,8 @@ public class NettyNetClient extends AbstractNetClient {
                     closeChannel(channel);
                 }
                 if (listener != null) {
-                    TNetEvent event = new TNetEvent(EventType.IDLE, address, channel);
-                    addEvent(event);
+                    TNetEvent tnetEvent = new TNetEvent(EventType.IDLE, address, channel);
+                    addEvent(tnetEvent);
                 }
             }
             super.userEventTriggered(ctx, evt);
