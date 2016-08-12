@@ -24,7 +24,7 @@ public class NettyChannelFuture implements TChannelFuture {
 
     @Override
     public TChannel getChannel() {
-        return new NettyChannle(channelFuture.channel());
+        return new NettyChannel(channelFuture.channel());
     }
 
     @Override

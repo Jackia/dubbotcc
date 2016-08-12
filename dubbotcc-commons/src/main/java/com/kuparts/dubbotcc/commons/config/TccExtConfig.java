@@ -8,11 +8,6 @@ package com.kuparts.dubbotcc.commons.config;
  * @version 1.0
  **/
 public class TccExtConfig extends TccConfig {
-
-    //本地IP地址
-    private String localAddress;
-    //IP地址
-    private int port;
     /**
      * 回滚队列大小
      */
@@ -78,21 +73,5 @@ public class TccExtConfig extends TccConfig {
 
     public void setMongoUserPwd(String mongoUserPwd) {
         this.mongoUserPwd = mongoUserPwd;
-    }
-
-    public void setLocalAddress(String localAddress) {
-        this.localAddress = localAddress;
-    }
-
-    public String getLocalAddress() {
-        return localAddress;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
     }
 }

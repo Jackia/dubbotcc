@@ -3,6 +3,8 @@ package com.kuparts.dubbotcc.supervise.support;
 import com.alibaba.dubbo.common.URL;
 import com.kuparts.dubbotcc.commons.config.TccExtConfig;
 import com.kuparts.dubbotcc.commons.utils.Assert;
+import com.kuparts.dubbotcc.supervise.net.NetServer;
+import com.kuparts.dubbotcc.supervise.net.netty.NettyNetServer;
 import com.kuparts.dubbotcc.supervise.propety.Context;
 
 /**
@@ -29,10 +31,11 @@ public class ParentSuperviseService {
     public void start() {
         Assert.notNull(config);
         if (!isRuning) {
-            Context.getContext().setPort(config.getPort());
             URL zookUrl = URL.valueOf(config.getZookurl());
             Context.getContext().setRigisterUrl(zookUrl);
             Context.getContext().setSid(config.getSerializer());
+            NetServer server = new NettyNetServer(Context.getContext(), new SuperviseServiceEventListener());
+            server.start();
         }
     }
 }

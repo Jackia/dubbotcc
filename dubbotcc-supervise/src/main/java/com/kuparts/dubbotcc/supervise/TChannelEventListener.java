@@ -9,6 +9,8 @@ package com.kuparts.dubbotcc.supervise;
  **/
 public interface TChannelEventListener {
 
+    void serverInit(final String address, final TChannel tChannel) throws Exception;
+
     void channelActive(final String address, final TChannel tChannel) throws Exception;
 
     void channelClose(final String address, final TChannel tChannel) throws Exception;
@@ -16,5 +18,7 @@ public interface TChannelEventListener {
     void channelReadComplete(final String address, final TChannel tChannel) throws Exception;
 
     void exceptionCaught(final String address, final TChannel tChannel) throws Exception;
+
+    void channelIdle(final String address, final TChannel tChannel) throws Exception;
 
 }

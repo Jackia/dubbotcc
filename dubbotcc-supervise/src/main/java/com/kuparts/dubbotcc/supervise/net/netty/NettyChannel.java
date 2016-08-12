@@ -4,6 +4,7 @@ import com.kuparts.dubbotcc.commons.utils.Assert;
 import com.kuparts.dubbotcc.supervise.TChannel;
 import com.kuparts.dubbotcc.supervise.TChannelHandler;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.net.SocketAddress;
@@ -15,16 +16,16 @@ import java.net.SocketAddress;
  * @author chenbin
  * @version 1.0
  **/
-public class NettyChannle implements TChannel {
+public class NettyChannel implements TChannel {
 
     private Channel channel;
 
-    public NettyChannle(ChannelHandlerContext channelHandlerContext) {
+    public NettyChannel(ChannelHandlerContext channelHandlerContext) {
         Assert.notNull(channelHandlerContext);
         this.channel = channelHandlerContext.channel();
     }
 
-    public NettyChannle(Channel channel) {
+    public NettyChannel(Channel channel) {
         this.channel = channel;
     }
 
@@ -55,12 +56,12 @@ public class NettyChannle implements TChannel {
 
     @Override
     public TChannelHandler writeAndFlush(Object message) {
-        channel.writeAndFlush(message);
-        return null;
+        ChannelFuture future = channel.writeAndFlush(message);
+        return new NettyChannelHandler(future);
     }
 
     @Override
     public TChannelHandler close() {
-        return null;
+        return new NettyChannelHandler(channel.close());
     }
 }
