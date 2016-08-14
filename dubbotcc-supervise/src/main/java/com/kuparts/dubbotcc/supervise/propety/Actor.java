@@ -1,13 +1,14 @@
 package com.kuparts.dubbotcc.supervise.propety;
 
 import com.alibaba.dubbo.common.URL;
-import com.google.common.base.Joiner;
 import com.kuparts.dubbotcc.commons.utils.Assert;
 import com.kuparts.dubbotcc.commons.utils.DateUtils;
 import com.kuparts.dubbotcc.commons.utils.UrlUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,7 +20,7 @@ import java.util.Map;
  **/
 public class Actor implements Serializable {
     //序号每个相同事务属性的参与者的唯一编号
-    private String number;
+    private long number;
     //参与者名称
     private String name;
     //参与者地址
@@ -29,9 +30,9 @@ public class Actor implements Serializable {
     //参与者发起时间
     private long runTime;//注册时间
     //节点类型
-    private String type;
+    private ActorType type;
     //状态
-    private String status;
+    private ActorStatus status;
 
     /**
      * @param name    参与者名称
@@ -50,17 +51,10 @@ public class Actor implements Serializable {
         this(name, local, port, DateUtils.nowEpochSecond());
     }
 
-    public String getStatus() {
-        return status;
+    public Actor() {
+        this(null, null, 0, DateUtils.nowEpochSecond());
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setRunTime(long runTime) {
-        this.runTime = runTime;
-    }
 
     public void setName(String name) {
         this.name = name;
@@ -72,10 +66,6 @@ public class Actor implements Serializable {
 
     public void setPort(int port) {
         this.port = port;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getName() {
@@ -94,17 +84,34 @@ public class Actor implements Serializable {
         return runTime;
     }
 
-    public String getType() {
+    public ActorType getType() {
         return type;
     }
 
-    public String getNumber() {
+    public void setType(ActorType type) {
+        this.type = type;
+    }
+
+    public ActorStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ActorStatus status) {
+        this.status = status;
+    }
+
+    public long getNumber() {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(long number) {
         this.number = number;
     }
+
+    public void setRunTime(long runTime) {
+        this.runTime = runTime;
+    }
+
 
     /**
      * 获取url地址
@@ -116,81 +123,94 @@ public class Actor implements Serializable {
         Assert.notNull(local);
         Assert.checkConditionArgument(port >= 0, "port is error");
         Map<String, String> params = new HashMap<>();
-        params.put("runTime", String.valueOf(this.runTime));
+        params.put("runTime", String.valueOf(runTime));
+        params.put("number", String.valueOf(number));
+        params.put("status", status.name());
+        params.put("type", type.name());
         Map<String, String> defauls = new HashMap<>();
-        defauls.put("port", String.valueOf(this.port));
-        defauls.put("host", this.local);
-        defauls.put("path", this.name);
-        defauls.put("status", this.status);
-        defauls.put("type", this.type);
+        defauls.put("port", String.valueOf(port));
+        defauls.put("host", local);
+        defauls.put("path", name);
         return UrlUtils.parseURL(params, defauls);
     }
 
     /**
-     * 获取nameSpace
+     * url 转换为actor对象
      *
-     * @return nameSpace字符串
+     * @param url url
+     * @return actor对象
      */
-    public String nameSpace() {
-        return Joiner.on(".").join(new String[]{name});
+    public static Actor parseActor(String url) {
+        Assert.notNull(url);
+        URL afterUrl = URL.valueOf(url);
+        Actor actor = new Actor();
+        actor.setLocal(afterUrl.getHost());
+        actor.setName(afterUrl.getPath());
+        actor.setNumber(Long.parseLong(afterUrl.getParameter("number")));
+        actor.setRunTime(Long.parseLong(afterUrl.getParameter("runTime")));
+        actor.setPort(afterUrl.getPort());
+        actor.setStatus(ActorStatus.valueOf(afterUrl.getParameter("status")));
+        actor.setType(ActorType.valueOf(afterUrl.getParameter("type")));
+        return actor;
+    }
+
+    /**
+     * 将一组URL转换成Actor对象
+     *
+     * @param urls 一组urls
+     * @return 一组actor对象
+     */
+    public static List<Actor> parseActor(List<String> urls) {
+        List<Actor> existActors = new ArrayList<>();
+        if (urls != null) {
+            urls.forEach(e -> {
+                String u = URL.decode(e);
+                Actor actor = parseActor(u);
+                existActors.add(actor);
+            });
+        }
+        return existActors;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Actor actor = (Actor) o;
 
-        if (port != actor.port) return false;
-        if (runTime != actor.runTime) return false;
-        if (name != null ? !name.equals(actor.name) : actor.name != null) return false;
-        return local != null ? local.equals(actor.local) : actor.local == null;
+        if (number != actor.number) {
+            return false;
+        }
+        if (!name.equals(actor.name)) {
+            return false;
+        }
+        return local.equals(actor.local);
 
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (local != null ? local.hashCode() : 0);
-        result = 31 * result + port;
-        result = 31 * result + (int) (runTime ^ (runTime >>> 32));
+        int result = (int) (number ^ number >>> 32);
+        result = 31 * result + name.hashCode();
+        result = 31 * result + local.hashCode();
         return result;
     }
 
-}
-
-/**
- * 类型
- */
-enum ActorType {
-    MASTER("master"),
-    SLAVE("slave"),
-    OBSERVE("observe");
-    private String typeStr;
-
-    ActorType(String str) {
-        this.typeStr = str;
-    }
-
-    public String getTypeStr() {
-        return typeStr;
-    }
-}
-
-/**
- * 状态
- */
-enum ActorStatus {
-    RUNING("runing"),
-    CLOSED("closed");
-    private String statusStr;
-
-    ActorStatus(String str) {
-        this.statusStr = str;
-    }
-
-    public String getTypeStr() {
-        return statusStr;
+    @Override
+    public String toString() {
+        return "Actor{" +
+                "number=" + number +
+                ", name='" + name + '\'' +
+                ", local='" + local + '\'' +
+                ", port=" + port +
+                ", runTime=" + runTime +
+                ", type=" + type +
+                ", status=" + status +
+                '}';
     }
 }

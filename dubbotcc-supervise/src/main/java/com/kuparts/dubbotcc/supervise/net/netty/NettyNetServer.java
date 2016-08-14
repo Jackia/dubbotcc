@@ -9,19 +9,14 @@ import com.kuparts.dubbotcc.supervise.net.NetHelper;
 import com.kuparts.dubbotcc.supervise.propety.Context;
 import com.kuparts.dubbotcc.supervise.propety.InvokeCommand;
 import com.kuparts.dubbotcc.supervise.support.AbstractNetServer;
+import com.kuparts.dubbotcc.supervise.support.Mediator;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 
 import java.net.InetSocketAddress;
@@ -38,13 +33,13 @@ public class NettyNetServer extends AbstractNetServer {
     /**
      * 服务处理
      */
-    private NioEventLoopGroup workGroup = null;
-    private NioEventLoopGroup childGroup = null;
-    private ServerBootstrap server;
-    private DefaultEventExecutorGroup defaultEventExecutorGroup = null;
+    private final NioEventLoopGroup workGroup;
+    private final NioEventLoopGroup childGroup;
+    private final ServerBootstrap server;
+    private DefaultEventExecutorGroup defaultEventExecutorGroup;
 
-    public NettyNetServer(Context context, TChannelEventListener listener) {
-        super(context, listener);
+    public NettyNetServer(Context context, TChannelEventListener listener, Mediator mediator) {
+        super(context, listener, mediator);
         workGroup = new NioEventLoopGroup(1);
         childGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors() << 1);
         server = new ServerBootstrap();
@@ -52,7 +47,7 @@ public class NettyNetServer extends AbstractNetServer {
 
     @Override
     protected void startServer() throws Exception {
-        this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(
+        defaultEventExecutorGroup = new DefaultEventExecutorGroup(
                 Runtime.getRuntime().availableProcessors() << 1,
                 new NamedThreadFactory("Netty_Dubbotcc_Server_")
         );
@@ -69,7 +64,7 @@ public class NettyNetServer extends AbstractNetServer {
             Channel channel = server.bind().sync().channel();
             int port = ((InetSocketAddress) channel.localAddress()).getPort();
             initServerLister(localAddress, port, new NettyChannel(channel));
-            LOG.error("start netty service...ip:" + localAddress + ",port:" + port);
+            LOG.info("start netty service...ip:" + localAddress + ",port:" + port);
             channel.closeFuture().sync();
         } catch (InterruptedException e) {
             LOG.error("start netty service error " + e.getMessage());
@@ -101,18 +96,18 @@ public class NettyNetServer extends AbstractNetServer {
             NettyCoderFactory coderFactory = new NettyCoderFactory(new DefaultCodec());
             localAddress = ch.localAddress().getHostString();//设置本地IP地址
             ch.pipeline().addLast(
-                    defaultEventExecutorGroup,
-                    coderFactory.getEnCoder(),
+//                    defaultEventExecutorGroup,
                     coderFactory.getDeCoder(),
-                    new IdleStateHandler(context.getReaderIdleTimeSeconds(), context.getWriterIdleTimeSeconds(), context.getServerChannelMaxIdleTimeSeconds()),
+                    coderFactory.getEnCoder(),
+//                    new IdleStateHandler(context.getReaderIdleTimeSeconds(), context.getWriterIdleTimeSeconds(), context.getServerChannelMaxIdleTimeSeconds()),
                     new NettyConnectHandler(),
                     new NettyServerHandler()
             );
         }
     }
 
-
     class NettyConnectHandler extends ChannelDuplexHandler {
+
         @Override
         public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
             String address = NetHelper.parseChannelRemoteAddr(new NettyChannel(ctx));
@@ -135,7 +130,7 @@ public class NettyNetServer extends AbstractNetServer {
             super.channelActive(ctx);
             if (listener != null) {
                 TNetEvent event = new TNetEvent(EventType.CONNECT, address, channel);
-                addEvent(event);
+                asyncEvent(event);
             }
         }
 
@@ -147,7 +142,7 @@ public class NettyNetServer extends AbstractNetServer {
             super.channelInactive(ctx);
             if (listener != null) {
                 TNetEvent event = new TNetEvent(EventType.CLOSE, address, channel);
-                addEvent(event);
+                asyncEvent(event);
             }
         }
 
@@ -157,12 +152,12 @@ public class NettyNetServer extends AbstractNetServer {
                 NettyChannel channel = new NettyChannel(ctx);
                 String address = NetHelper.parseChannelRemoteAddr(channel);
                 IdleStateEvent event = (IdleStateEvent) evt;
-                if (event.state().equals(IdleState.ALL_IDLE)) {
+                if (event.state() == IdleState.ALL_IDLE) {
                     NetHelper.closeChannel(channel);
                 }
                 if (listener != null) {
                     TNetEvent netEvent = new TNetEvent(EventType.IDLE, address, channel);
-                    addEvent(netEvent);
+                    asyncEvent(netEvent);
                 }
             }
             super.userEventTriggered(ctx, evt);
@@ -176,7 +171,7 @@ public class NettyNetServer extends AbstractNetServer {
             super.exceptionCaught(ctx, cause);
             if (listener != null) {
                 TNetEvent event = new TNetEvent(EventType.EXCEPTION, address, channel);
-                addEvent(event);
+                asyncEvent(event);
             }
             NetHelper.closeChannel(channel);
         }
@@ -185,6 +180,7 @@ public class NettyNetServer extends AbstractNetServer {
     /**
      * 命令处理
      */
+    @ChannelHandler.Sharable
     class NettyServerHandler extends SimpleChannelInboundHandler<InvokeCommand> {
 
         @Override

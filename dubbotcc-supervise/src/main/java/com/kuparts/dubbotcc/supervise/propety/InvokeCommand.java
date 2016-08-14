@@ -10,16 +10,19 @@ import java.io.Serializable;
  * @version 1.0
  **/
 public class InvokeCommand implements Serializable {
+    private static final long serialVersionUID = -8215894982998755463L;
     //执行者序号
-    private int number;
+    private long number;
     //序列化ID
     private String sid;
+    //命令类型
+    private int commandType;
 
-    public int getNumber() {
+    public long getNumber() {
         return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(long number) {
         this.number = number;
     }
 
@@ -31,11 +34,28 @@ public class InvokeCommand implements Serializable {
         this.sid = sid;
     }
 
-    public InvokeCommand(int number, String sid) {
+    public int getCommandType() {
+        return commandType;
+    }
+
+    public void setCommandType(int commandType) {
+        this.commandType = commandType;
+    }
+
+    public InvokeCommand(long number, String sid) {
         this.number = number;
         this.sid = sid;
     }
 
     public InvokeCommand() {
+    }
+
+    @Override
+    public String toString() {
+        return "InvokeCommand{" +
+                "number=" + number +
+                ", sid='" + sid + '\'' +
+                ", commandType=" + commandType +
+                '}';
     }
 }

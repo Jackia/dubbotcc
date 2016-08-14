@@ -25,20 +25,21 @@ public class NetHelper {
     /**
      * 获取本机所有IP
      *
-     * @return
+     * @return 当前活动网卡的所有IP地址
      */
     public static Set<String> getlocalAddress() {
         Set<String> locals = new HashSet<>();
         try {
             Enumeration allNetInterfaces = NetworkInterface.getNetworkInterfaces();
-            InetAddress ip;
             while (allNetInterfaces.hasMoreElements()) {
                 NetworkInterface netInterface = (NetworkInterface) allNetInterfaces.nextElement();
-                if (netInterface.isLoopback() || netInterface.isVirtual() || !netInterface.isUp()) continue;
+                if (netInterface.isLoopback() || netInterface.isVirtual() || !netInterface.isUp()) {
+                    continue;
+                }
                 Enumeration addresses = netInterface.getInetAddresses();
                 while (addresses.hasMoreElements()) {
-                    ip = (InetAddress) addresses.nextElement();
-                    if (ip != null && ip instanceof Inet4Address) {
+                    InetAddress ip = (InetAddress) addresses.nextElement();
+                    if (ip instanceof Inet4Address) {
                         locals.add(ip.getHostAddress());
                     }
                 }
@@ -50,13 +51,13 @@ public class NetHelper {
     }
 
     public static String parseChannelRemoteAddr(final TChannel channel) {
-        if (null == channel) {
+        if (channel == null) {
             return "";
         }
         final SocketAddress remote = channel.remoteAddress();
         final String addr = remote != null ? remote.toString() : "";
 
-        if (addr.length() > 0) {
+        if (!addr.isEmpty()) {
             int index = addr.lastIndexOf("/");
             if (index >= 0) {
                 return addr.substring(index + 1);

@@ -6,6 +6,7 @@ import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.common.utils.StringUtils;
 import com.google.common.collect.Lists;
 import com.kuparts.dubbotcc.commons.api.CompensationCallback;
+import com.kuparts.dubbotcc.commons.api.SuperviseService;
 import com.kuparts.dubbotcc.commons.bean.BeanServiceUtils;
 import com.kuparts.dubbotcc.commons.bean.TCCC;
 import com.kuparts.dubbotcc.commons.config.TccExtConfig;
@@ -47,6 +48,10 @@ public class ServiceInitialize {
     @Autowired
     CallbackService callbackService;
 
+    @Autowired
+    SuperviseService superviseService;
+
+
     private ConfigurableApplicationContext cfgContext;
 
     /**
@@ -60,11 +65,16 @@ public class ServiceInitialize {
             initCache();
             rollback.listerQueue();
             loadCallback();
+            //启动net与Zookeeper
+            if (config.getSupervise().equals(Boolean.toString(true))) {
+                superviseService.start();
+            }
         } catch (RuntimeException ex) {
             LOG.error(ex.getMessage(), ex.getCause());
             System.exit(1);//非正常关闭
         }
     }
+
     /**
      * 获取扩展对象
      */
@@ -87,7 +97,7 @@ public class ServiceInitialize {
             throw new TccRuntimeException("cacheApplicationContext is null");
         }
         config.setCache(cacheConfig);
-        service.init(cfgContext, config);
+//        service.init(cfgContext, config);
         BeanServiceUtils.getInstance().registerBean(TransactionCacheService.class.getName(), service);
     }
 
@@ -110,7 +120,9 @@ public class ServiceInitialize {
      * @see com.kuparts.dubbotcc.core.rollback.task.DefaultTask
      */
     public void loadCallBackByDefault(Map<String, Object> beans) {
-        if (beans == null) return;
+        if (beans == null) {
+            return;
+        }
         List<CompensationCallback> list = Lists.newArrayList();
         beans.forEach((k, v) -> {
             if (v instanceof CompensationCallback) {
@@ -128,7 +140,9 @@ public class ServiceInitialize {
      * @see com.kuparts.dubbotcc.commons.bean.TcccMethod
      */
     public void loadCallback(Map<String, Object> beans) {
-        if (beans == null) return;
+        if (beans == null) {
+            return;
+        }
         callbackService.fullCallback(beans);
     }
 

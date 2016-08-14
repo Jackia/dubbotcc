@@ -27,6 +27,7 @@ public class DefaultCodec extends AbstractCodec {
             ByteBuffer buffer = ByteBuffer.allocate(4 + length);
             buffer.putInt(length);
             buffer.putInt(sid);
+            buffer.putInt(datas.length);
             buffer.put(datas);
             buffer.flip();
             return buffer;
@@ -38,11 +39,12 @@ public class DefaultCodec extends AbstractCodec {
 
     @Override
     public InvokeCommand decodec(ByteBuffer buffer) throws TccException {
-        int heandLength = buffer.getInt();
+        int length = buffer.getInt();
         int sid = buffer.getInt();
+        int hlength = buffer.getInt();
         String sidStr = SerializerFactory.getStrs(sid);
         ObjectSerializer serializer = getSer(sidStr);
-        byte[] bytes = new byte[heandLength - 4 - 4];
+        byte[] bytes = new byte[hlength];
         buffer.get(bytes);
         try {
             return serializer.deSerialize(bytes, InvokeCommand.class);

@@ -5,7 +5,7 @@ package com.kuparts.dubbotcc.supervise;
  */
 public enum EventType {
     //初始化
-    SERVERINIT,
+    INIT,
     //连接
     CONNECT,
     //读取数据

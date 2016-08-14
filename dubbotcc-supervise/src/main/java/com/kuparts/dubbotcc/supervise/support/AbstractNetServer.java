@@ -1,5 +1,7 @@
 package com.kuparts.dubbotcc.supervise.support;
 
+import com.alibaba.dubbo.common.logger.Logger;
+import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.kuparts.dubbotcc.commons.exception.TccException;
 import com.kuparts.dubbotcc.commons.utils.Assert;
 import com.kuparts.dubbotcc.supervise.EventType;
@@ -8,8 +10,10 @@ import com.kuparts.dubbotcc.supervise.TChannelEventListener;
 import com.kuparts.dubbotcc.supervise.TNetEvent;
 import com.kuparts.dubbotcc.supervise.net.NetHelper;
 import com.kuparts.dubbotcc.supervise.net.NetServer;
+import com.kuparts.dubbotcc.supervise.propety.Actor;
 import com.kuparts.dubbotcc.supervise.propety.Context;
 import com.kuparts.dubbotcc.supervise.propety.InvokeCommand;
+import com.kuparts.dubbotcc.supervise.propety.NotifyClient;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
@@ -22,20 +26,27 @@ import java.util.concurrent.CompletableFuture;
  * @version 1.0
  **/
 public abstract class AbstractNetServer extends AbstractNet implements NetServer {
-
+    protected static final Logger LOG = LoggerFactory.getLogger(AbstractNetServer.class);
     //用于注册的服务地址
     protected volatile String localAddress;
 
     //初始化网络服务
-    public AbstractNetServer(Context context, TChannelEventListener listener) {
-        super(context, listener);
+    public AbstractNetServer(Context context, TChannelEventListener listener, Mediator mediator) {
+        super(context, listener, mediator);
         //初始化网络IP地址
         localAddress = NetHelper.getlocalAddress().stream().findFirst().get();
+        mediator.register(NotifyClient.NETSERVER, this);
     }
 
     @Override
     protected void processReleaseCommand(TChannel channel, InvokeCommand command) {
-        
+        System.out.println("收到命令了............" + channel.remoteAddress() + ",command:" + command);
+    }
+
+    @Override
+    public boolean notify(Actor targetAcotr, InvokeCommand command, NotifyCallback... callbacks) {
+
+        return false;
     }
 
     /**
@@ -53,7 +64,7 @@ public abstract class AbstractNetServer extends AbstractNet implements NetServer
         InetSocketAddress inetAddress = new InetSocketAddress(host, port);
         context.setLocalAddress(inetAddress);
         try {
-            addEvent(new TNetEvent(EventType.SERVERINIT, localAddress, channel));
+            syncEvent(new TNetEvent(EventType.INIT, localAddress, channel));//同步服务
         } catch (TccException e) {
             LOG.error("init server lister error......." + e.getMessage());
             System.exit(1);//非正常退出

@@ -30,6 +30,10 @@ public class TccConfig {
      */
     private String cache;
     /**
+     * 是否运行监中心
+     */
+    private String supervise;
+    /**
      * 补偿方法获取..
      */
     private List<CompensationCallback> callbacks;
@@ -72,5 +76,13 @@ public class TccConfig {
 
     public String getZookurl() {
         return zookurl;
+    }
+
+    public String getSupervise() {
+        return supervise;
+    }
+
+    public void setSupervise(String supervise) {
+        this.supervise = supervise;
     }
 }

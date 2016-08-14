@@ -24,6 +24,16 @@ public class SerializerFactory {
     private transient static final Map<String, Integer> SERIDS = new HashMap<>();
     private transient static final Map<Integer, String> STRSTRS = new HashMap<>();
 
+    static {
+        //初始关系
+        SERIDS.put("kryo", 1);
+        SERIDS.put("java", 2);
+        SERIDS.put("hessian", 3);
+        STRSTRS.put(1, "kryo");
+        STRSTRS.put(2, "java");
+        STRSTRS.put(3, "hessian");
+    }
+
     @Autowired
     TccExtConfig config;
 
@@ -39,13 +49,6 @@ public class SerializerFactory {
             serializer = ExtensionLoader.getExtensionLoader(ObjectSerializer.class).getExtension(config.getSerializer());
         }
         BeanServiceUtils.getInstance().registerBean(ObjectSerializer.class.getName(), serializer);
-        //初始关系
-        SERIDS.put("kryo", 1);
-        SERIDS.put("java", 2);
-        SERIDS.put("hessian", 3);
-        STRSTRS.put(1, "kryo");
-        STRSTRS.put(2, "java");
-        STRSTRS.put(3, "hessian");
     }
 
     /**

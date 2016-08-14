@@ -33,4 +33,7 @@ public class TccExtConfigConstants {
     //系统唯一标识
     public static final String APPLICATION = "application";
     //=============================重要配置=================================
+    //系统获取的唯一编号
+    public static final String MY_ID = "myid";
+    public static final String RUN_SUPERVISE = "supervise";
 }

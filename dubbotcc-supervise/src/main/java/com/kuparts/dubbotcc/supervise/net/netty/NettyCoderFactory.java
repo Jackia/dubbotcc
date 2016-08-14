@@ -22,7 +22,7 @@ import java.nio.ByteBuffer;
 public class NettyCoderFactory {
 
     protected static final Logger LOG = LoggerFactory.getLogger(NettyCoderFactory.class);
-    private Codec codec;
+    private final Codec codec;
 
     public NettyCoderFactory(Codec codec) {
         this.codec = codec;
@@ -44,6 +44,7 @@ public class NettyCoderFactory {
 
         @Override
         protected void encode(ChannelHandlerContext ctx, InvokeCommand msg, ByteBuf out) throws Exception {
+            System.out.println("加码了.........." + ctx.channel().localAddress() + "," + msg);
             if (msg == null) {
                 return;
             }
@@ -51,6 +52,8 @@ public class NettyCoderFactory {
                 ByteBuffer buffer = codec.encodec(msg);
                 out.writeBytes(buffer);
             } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+                ex.printStackTrace();
                 LOG.info("encode invokeCommand error..," + ex.getMessage());
                 TChannel channel = new NettyChannel(ctx.channel());
                 NetHelper.closeChannel(channel);
@@ -59,13 +62,16 @@ public class NettyCoderFactory {
     }
 
     public class NettyDeCoder extends LengthFieldBasedFrameDecoder {
-
         public NettyDeCoder() {
             super(1024, 0, 4, 0, 0);
         }
 
         @Override
         protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
+            System.out.println("解码了.........." + ctx.channel().localAddress());
+            if (in.capacity() > 1024) {
+                return null;
+            }
             ByteBuf out = (ByteBuf) super.decode(ctx, in);
             if (out == null) {
                 return null;

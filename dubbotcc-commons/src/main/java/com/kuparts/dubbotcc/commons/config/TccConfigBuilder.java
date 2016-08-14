@@ -94,7 +94,10 @@ public class TccConfigBuilder {
         }
         if (StringUtils.isBlank(extconf.getZookurl())) {
             String app = TccApplicationConfig.getInstance().getRegistryConfig().getAddress();
-            extconf.setApplication(app);
+            extconf.setZookurl(app);
+        }
+        if (StringUtils.isBlank(extconf.getSupervise())) {
+            extconf.setSupervise(Boolean.toString(true));
         }
     }
 

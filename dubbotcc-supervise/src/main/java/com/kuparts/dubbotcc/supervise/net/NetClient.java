@@ -9,6 +9,7 @@ package com.kuparts.dubbotcc.supervise.net;
  **/
 public interface NetClient {
     void start();
+
     /**
      * 异步调用
      */

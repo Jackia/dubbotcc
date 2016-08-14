@@ -18,11 +18,11 @@ import java.net.SocketAddress;
  **/
 public class NettyChannel implements TChannel {
 
-    private Channel channel;
+    private final Channel channel;
 
     public NettyChannel(ChannelHandlerContext channelHandlerContext) {
         Assert.notNull(channelHandlerContext);
-        this.channel = channelHandlerContext.channel();
+        channel = channelHandlerContext.channel();
     }
 
     public NettyChannel(Channel channel) {

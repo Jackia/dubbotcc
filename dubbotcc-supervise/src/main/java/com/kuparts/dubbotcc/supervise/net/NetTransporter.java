@@ -12,14 +12,14 @@ public interface NetTransporter {
     /**
      * 获取客户端
      *
-     * @return
+     * @return 服务通讯客户端
      */
     NetClient netClient();
 
     /**
      * 获取服务端
      *
-     * @return
+     * @return 服务通讯服务端
      */
     NetServer netServer();
 }

@@ -10,23 +10,17 @@ import com.kuparts.dubbotcc.supervise.net.NetHelper;
 import com.kuparts.dubbotcc.supervise.propety.Context;
 import com.kuparts.dubbotcc.supervise.propety.InvokeCommand;
 import com.kuparts.dubbotcc.supervise.support.AbstractNetClient;
+import com.kuparts.dubbotcc.supervise.support.Mediator;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPromise;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 /**
@@ -36,19 +30,19 @@ import java.net.SocketAddress;
  **/
 public class NettyNetClient extends AbstractNetClient {
 
-    private NioEventLoopGroup workGroup = null;
-    private DefaultEventExecutorGroup defaultEventExecutorGroup = null;
-    private Bootstrap bootstrap;
+    private final NioEventLoopGroup workGroup;
+    private DefaultEventExecutorGroup defaultEventExecutorGroup;
+    private final Bootstrap bootstrap;
 
-    public NettyNetClient(Context context, TChannelEventListener listener) {
-        super(context, listener);
+    public NettyNetClient(Context context, TChannelEventListener listener, Mediator mediator) {
+        super(context, listener, mediator);
         workGroup = new NioEventLoopGroup(1);
         bootstrap = new Bootstrap();
     }
 
     @Override
     public void asynInvoker() {
-
+        System.out.println("开始发送命令............");
     }
 
     @Override
@@ -59,23 +53,25 @@ public class NettyNetClient extends AbstractNetClient {
     @Override
     protected void startClient() {
         NettyCoderFactory coderFactory = new NettyCoderFactory(new DefaultCodec());
-        this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(
+        defaultEventExecutorGroup = new DefaultEventExecutorGroup(
                 Runtime.getRuntime().availableProcessors() << 1,
                 new NamedThreadFactory("Netty_Dubbotcc_client_")
         );
+        NettyConnectHandler nettyConnectHandler = new NettyConnectHandler();
+        NettyClientHandler nettyClientHandler = new NettyClientHandler();
         bootstrap.group(workGroup)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
-                .handler(new ChannelInitializer() {
+                .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
-                    protected void initChannel(Channel ch) throws Exception {
+                    protected void initChannel(SocketChannel ch) {
                         ch.pipeline().addLast(
                                 defaultEventExecutorGroup,
-                                coderFactory.getDeCoder(),
                                 coderFactory.getEnCoder(),
-                                new IdleStateHandler(context.getReaderIdleTimeSeconds(), context.getWriterIdleTimeSeconds(), context.getServerChannelMaxIdleTimeSeconds()),
-                                new NettyConnectHandler(),
-                                new NettyClientHandler()
+                                coderFactory.getDeCoder(),
+//                                new IdleStateHandler(context.getReaderIdleTimeSeconds(), context.getWriterIdleTimeSeconds(), context.getServerChannelMaxIdleTimeSeconds()),
+                                nettyConnectHandler,
+                                nettyClientHandler
                         );
                     }
                 });
@@ -83,12 +79,19 @@ public class NettyNetClient extends AbstractNetClient {
     }
 
     @Override
-    protected TChannel connection(InetAddress host, int port) {
-        ChannelFuture future = this.bootstrap.connect(host, port);
+    protected TChannel connection(String host, int port) {
+        SocketAddress socketAddress = new InetSocketAddress(host, port);
+        ChannelFuture future = null;
+        try {
+            future = bootstrap.connect(socketAddress).sync();
+        } catch (InterruptedException e) {
+
+        }
         return new NettyChannel(future.channel());
     }
 
-    class NettyConnectHandler extends ChannelDuplexHandler {
+    @ChannelHandler.Sharable
+    public class NettyConnectHandler extends ChannelDuplexHandler {
         @Override
         public void connect(ChannelHandlerContext ctx, SocketAddress remoteAddress, SocketAddress localAddress, ChannelPromise future) throws Exception {
             String local = localAddress != null ? localAddress.toString() : "NONE";
@@ -97,7 +100,7 @@ public class NettyNetClient extends AbstractNetClient {
             super.connect(ctx, remoteAddress, localAddress, future);
             if (listener != null) {
                 TNetEvent event = new TNetEvent(EventType.CONNECT, remote, new NettyChannel(ctx));
-                addEvent(event);
+                asyncEvent(event);
             }
         }
 
@@ -109,7 +112,7 @@ public class NettyNetClient extends AbstractNetClient {
             super.disconnect(ctx, future);
             if (listener != null) {
                 TNetEvent event = new TNetEvent(EventType.CLOSE, remote, new NettyChannel(ctx));
-                addEvent(event);
+                asyncEvent(event);
             }
         }
 
@@ -121,7 +124,7 @@ public class NettyNetClient extends AbstractNetClient {
             super.close(ctx, future);
             if (listener != null) {
                 TNetEvent event = new TNetEvent(EventType.CLOSE, remote, new NettyChannel(ctx));
-                addEvent(event);
+                asyncEvent(event);
             }
         }
 
@@ -131,13 +134,13 @@ public class NettyNetClient extends AbstractNetClient {
                 NettyChannel channel = new NettyChannel(ctx);
                 String address = NetHelper.parseChannelRemoteAddr(channel);
                 IdleStateEvent event = (IdleStateEvent) evt;
-                if (event.state().equals(IdleState.ALL_IDLE)) {
+                if (event.state() == IdleState.ALL_IDLE) {
                     LOG.info("client close channel:" + channel.localAddress());
                     closeChannel(channel);
                 }
                 if (listener != null) {
                     TNetEvent tnetEvent = new TNetEvent(EventType.IDLE, address, channel);
-                    addEvent(tnetEvent);
+                    asyncEvent(tnetEvent);
                 }
             }
             super.userEventTriggered(ctx, evt);
@@ -152,7 +155,7 @@ public class NettyNetClient extends AbstractNetClient {
             super.exceptionCaught(ctx, cause);
             if (listener != null) {
                 TNetEvent event = new TNetEvent(EventType.EXCEPTION, remote, channel);
-                addEvent(event);
+                asyncEvent(event);
             }
         }
     }
@@ -161,11 +164,13 @@ public class NettyNetClient extends AbstractNetClient {
     /**
      * 命令处理
      */
-    class NettyClientHandler extends SimpleChannelInboundHandler<InvokeCommand> {
+    @ChannelHandler.Sharable
+    public class NettyClientHandler extends SimpleChannelInboundHandler<InvokeCommand> {
 
         @Override
         protected void channelRead0(ChannelHandlerContext ctx, InvokeCommand msg) throws Exception {
             processReleaseCommand(new NettyChannel(ctx.channel()), msg);
         }
+
     }
 }

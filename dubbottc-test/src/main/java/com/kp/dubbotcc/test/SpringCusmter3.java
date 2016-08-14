@@ -1,6 +1,5 @@
 package com.kp.dubbotcc.test;
 
-import com.kuparts.dubbotcc.commons.api.SuperviseService;
 import com.kuparts.dubbotcc.supervise.support.ParentSuperviseService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -9,14 +8,14 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author chenbin
  * @version 1.0
  **/
-public class SpringCusmter {
+public class SpringCusmter3 {
     public static void main(String[] args) {
-        new SpringCusmter().test();
+        new SpringCusmter3().test();
     }
 
     public void test() {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:application.xml");
-        context.getBean(ParentSuperviseService.class).test("1111");
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:application2.xml");
+        context.getBean(ParentSuperviseService.class).test("3333");
         try {
             Thread.sleep(Integer.MAX_VALUE);
         } catch (InterruptedException e) {

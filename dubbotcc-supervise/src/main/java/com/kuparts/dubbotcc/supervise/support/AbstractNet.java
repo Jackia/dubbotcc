@@ -19,7 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author chenbin
  * @version 1.0
  **/
-public abstract class AbstractNet {
+public abstract class AbstractNet implements Notify {
 
     protected static final Logger LOG = LoggerFactory.getLogger(AbstractNet.class);
     //本机端口
@@ -31,21 +31,24 @@ public abstract class AbstractNet {
 
     private final ExecutorService POOL = Executors.newSingleThreadExecutor();
 
+    private final Mediator mediator;
+
     //是否停止张程
     protected volatile boolean isRun = true;
 
-    protected AbstractNet(Context context, TChannelEventListener listener) {
+    protected AbstractNet(Context context, TChannelEventListener listener, Mediator mediator) {
         this.context = context;
         this.listener = listener;
+        this.mediator = mediator;
         QUEUE = new LinkedBlockingQueue<>(context.getListenerMax());
     }
 
     /**
-     * 增加一个处理事件到队列中..
+     * 增加一个处理事件到队列中..异步命令
      *
      * @param event
      */
-    protected void addEvent(TNetEvent event) throws TccException {
+    protected void asyncEvent(TNetEvent event) throws TccException {
         try {
             if (isRun) {
                 QUEUE.put(event);
@@ -59,10 +62,52 @@ public abstract class AbstractNet {
     }
 
     /**
+     * 发布一个同步命令
+     *
+     * @param event
+     * @throws TccException
+     */
+    protected void syncEvent(TNetEvent event) throws TccException {
+        if (listener != null) {
+            try {
+
+                switch (event.getType()) {
+                    case INIT:
+                        listener.init(event.getAddress(), event.getChannel());
+                        break;
+                    case CONNECT:
+                        listener.channelActive(event.getAddress(), event.getChannel());
+                        break;
+                    case READ:
+                        listener.channelReadComplete(event.getAddress(), event.getChannel());
+                        break;
+                    case CLOSE:
+                        listener.channelClose(event.getAddress(), event.getChannel());
+                        break;
+                    case EXCEPTION:
+                        listener.exceptionCaught(event.getAddress(), event.getChannel());
+                        break;
+                    case IDLE:
+                        listener.channelIdle(event.getAddress(), event.getChannel());
+                        break;
+                    default:
+                        LOG.error("send listener error");
+                        break;
+                }
+            } catch (Exception e) {
+                LOG.error("send listener error,Have been discarded");
+                throw new TccException("send listener error,Have been discarded");
+            }
+        }
+    }
+
+    /**
      * 启动队列命令监听
      */
     public void excute() {
-        if (listener == null) return;
+        if (listener == null) {
+            return;
+        }
         //启动线程监听
         POOL.execute(new Worker());
     }
@@ -73,7 +118,7 @@ public abstract class AbstractNet {
      * @param channel 通道
      * @param command 命令
      */
-    protected abstract void processReleaseCommand(TChannel channel, InvokeCommand command);
+    protected abstract void processReleaseCommand(TChannel channel, InvokeCommand command) throws Exception;
 
     /**
      * 停止服务
@@ -100,8 +145,8 @@ public abstract class AbstractNet {
 
                     TNetEvent event = QUEUE.take();
                     switch (event.getType()) {
-                        case SERVERINIT:
-                            listener.serverInit(event.getAddress(), event.getChannel());
+                        case INIT:
+                            listener.init(event.getAddress(), event.getChannel());
                             break;
                         case CONNECT:
                             listener.channelActive(event.getAddress(), event.getChannel());
@@ -117,12 +162,11 @@ public abstract class AbstractNet {
                             break;
                         case IDLE:
                             listener.channelIdle(event.getAddress(), event.getChannel());
+                            break;
                         default:
                             LOG.error("send listener error");
                             break;
                     }
-                } catch (InterruptedException e) {
-                    LOG.error("send listener error,Have been discarded");
                 } catch (Exception e) {
                     LOG.error("send listener error,Have been discarded");
                 }

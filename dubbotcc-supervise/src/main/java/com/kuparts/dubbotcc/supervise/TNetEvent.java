@@ -9,11 +9,11 @@ package com.kuparts.dubbotcc.supervise;
  **/
 public class TNetEvent {
     //事件类型
-    private EventType type;
+    private  EventType type;
     //发生的远程地址
-    private String address;
+    private  String address;
     //通道
-    private TChannel channel;
+    private  TChannel channel;
 
     public TNetEvent(EventType type, String address, TChannel channel) {
         this.type = type;
