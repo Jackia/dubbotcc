@@ -4,6 +4,7 @@ import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.common.utils.StringUtils;
 import com.kuparts.dubbotcc.commons.bean.BeanServiceUtils;
+import com.kuparts.dubbotcc.commons.utils.MapEntity;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -112,12 +113,12 @@ public class TccConfigBuilder {
         Map<String, Object> valueMap = Arrays.stream(fields).map(e -> {
             String fieldValue = null;
             try {
-                if (!e.getName().startsWith("DEFAULT_")) {
+                if (!e.getName().startsWith("DEFAULT_")) {//过滤已DEFAULT开头的属性
                     fieldValue = (String) FieldUtils.readStaticField(e);
-                    MapEntity entiy = new MapEntity();
-                    entiy.setKey(fieldValue);
-                    entiy.setValue(properties.get(fieldValue));
-                    return entiy;
+                    MapEntity entity = new MapEntity();
+                    entity.setKey(fieldValue);
+                    entity.setValue(properties.get(fieldValue));
+                    return entity;
                 }
                 return null;
             } catch (IllegalAccessException e1) {
@@ -125,33 +126,12 @@ public class TccConfigBuilder {
                 return null;
             }
         }).filter(e -> e != null && e.getKey() != null && e.getValue() != null)
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+                .collect(Collectors.toMap(MapEntity::getKey, MapEntity::getValue));
         //把map转成bean
         try {
             BeanUtils.populate(extconf, valueMap);
         } catch (Exception e) {
             LOG.error("loader properties error ," + e.getMessage());
-        }
-    }
-
-    static class MapEntity {
-        String key;
-        Object value;
-
-        public String getKey() {
-            return key;
-        }
-
-        public void setKey(String key) {
-            this.key = key;
-        }
-
-        public Object getValue() {
-            return value;
-        }
-
-        public void setValue(Object value) {
-            this.value = value;
         }
     }
 }

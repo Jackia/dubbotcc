@@ -108,5 +108,10 @@
             <artifactId>zookeeper</artifactId>
             <version>3.4.6</version>
         </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

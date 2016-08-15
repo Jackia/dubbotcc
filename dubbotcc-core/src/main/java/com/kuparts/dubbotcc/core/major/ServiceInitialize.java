@@ -7,10 +7,10 @@ import com.alibaba.dubbo.common.utils.StringUtils;
 import com.google.common.collect.Lists;
 import com.kuparts.dubbotcc.commons.api.CompensationCallback;
 import com.kuparts.dubbotcc.commons.api.SuperviseService;
-import com.kuparts.dubbotcc.commons.bean.BeanServiceUtils;
 import com.kuparts.dubbotcc.commons.bean.TCCC;
 import com.kuparts.dubbotcc.commons.config.TccExtConfig;
 import com.kuparts.dubbotcc.commons.exception.TccRuntimeException;
+import com.kuparts.dubbotcc.commons.bean.BeanServiceUtils;
 import com.kuparts.dubbotcc.core.cache.TransactionCacheService;
 import com.kuparts.dubbotcc.core.cache.config.CacheApplicationContext;
 import com.kuparts.dubbotcc.core.rollback.CallbackService;
@@ -19,7 +19,7 @@ import com.kuparts.dubbotcc.core.rollback.task.DefaultTask;
 import com.kuparts.dubbotcc.core.serializer.SerializerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ import java.util.Map;
  * @author chenbin
  * @version 1.0
  **/
-@Service
+@Component
 public class ServiceInitialize {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServiceInitialize.class);
@@ -62,7 +62,9 @@ public class ServiceInitialize {
             this.cfgContext = applicationContext;
             //合并回调方法信息
             serializerFactory.initFactory();
+            //初始化缓存
             initCache();
+            //初始化事务执行后的回调
             rollback.listerQueue();
             loadCallback();
             //启动net与Zookeeper
@@ -97,7 +99,7 @@ public class ServiceInitialize {
             throw new TccRuntimeException("cacheApplicationContext is null");
         }
         config.setCache(cacheConfig);
-//        service.init(cfgContext, config);
+        service.init(cfgContext, config);
         BeanServiceUtils.getInstance().registerBean(TransactionCacheService.class.getName(), service);
     }
 

@@ -13,13 +13,13 @@
     <!--注解配置 -->
     <context:component-scan base-package="com.kp"/>
     <!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
-    <dubbo:application name="kupartstest" logger="slf4j"/>
+    <dubbo:application name="kp-service-api-c" logger="slf4j"/>
     <!-- 使用zookeeper注册中心暴露服务地址 -->
     <!-- 多注册中心配置，竖号分隔表示同时连接多个不同注册中心，同一注册中心的多个集群地址用逗号分隔 -->
     <!-- 注册中心地址${dubbo.registry.address} -->
-    <dubbo:registry protocol="zookeeper" address="zookeeper://192.168.71.130:2181?backup=192.168.71.130:2182,192.168.71.130:2183"/>
+    <dubbo:registry protocol="zookeeper" address="zookeeper://10.1.1.197:2181?backup=10.1.1.198:2181,10.1.1.199:2181"/>
 
-    <bean class="com.kuparts.dubbotcc.supervise.spring.TccTransactionSpring">
+    <bean class="com.kuparts.dubbotcc.core.spring.DubboTransaction">
         <property name="cache" value="mongo"/>
         <property name="serializer" value="kryo"/>
         <property name="supervise" value="false"/>

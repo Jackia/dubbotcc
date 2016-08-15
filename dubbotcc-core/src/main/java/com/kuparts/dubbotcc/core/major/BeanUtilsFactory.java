@@ -4,9 +4,11 @@ import com.kuparts.dubbotcc.commons.bean.BeanServiceUtils;
 import com.kuparts.dubbotcc.commons.bean.TccBeanFactory;
 import com.kuparts.dubbotcc.commons.config.TccConfigBuilder;
 import com.kuparts.dubbotcc.commons.config.TccSpringConfig;
+import com.kuparts.dubbotcc.core.dispatch.propety.CommandType;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
 
 /**
  * @author chenbin@kuparts.com
@@ -15,7 +17,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  **/
 public class BeanUtilsFactory implements TccBeanFactory {
     //扫描包
-    private final String SCAN_PACKAGE = "com.kuparts";
+    private final String SCAN_PACKAGE = "com.kuparts.dubbotcc";
 
     private ConfigurableApplicationContext cfgContext;
     /**
@@ -32,6 +34,11 @@ public class BeanUtilsFactory implements TccBeanFactory {
         Scanner scanner = new Scanner((BeanDefinitionRegistry) cfgContext.getBeanFactory());
         scanner.setResourceLoader(cfgContext);
         scanner.scan(SCAN_PACKAGE);
+        //扫描事务调度命令
+        CommandScanner commandScanner = new CommandScanner((BeanDefinitionRegistry) cfgContext.getBeanFactory());
+        commandScanner.setResourceLoader(cfgContext);
+        commandScanner.addIncludeFilter(new AnnotationTypeFilter(CommandType.CommandTask.class));
+        commandScanner.scan(SCAN_PACKAGE);
     }
 
     @Override

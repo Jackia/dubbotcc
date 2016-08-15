@@ -1,7 +1,6 @@
 package com.kp.dubbotcc.test;
 
-import com.kuparts.dubbotcc.commons.api.SuperviseService;
-import com.kuparts.dubbotcc.supervise.support.ParentSuperviseService;
+import com.kuparts.dubbotcc.core.dispatch.support.ParentSuperviseService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**

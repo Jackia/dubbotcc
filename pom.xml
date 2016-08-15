@@ -12,7 +12,6 @@
         <module>dubbotcc-commons</module>
         <module>dubbotcc-core</module>
         <module>dubbotcc-api</module>
-        <module>dubbotcc-supervise</module>
     </modules>
     <distributionManagement>
         <repository>

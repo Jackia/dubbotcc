@@ -43,6 +43,7 @@ public class CallbackService {
      * 回调过滤列表
      */
     private final List<String> FILTERS = new ArrayList<>();
+
     /**
      * bean方法填充
      *
@@ -164,7 +165,12 @@ public class CallbackService {
      * @return true false
      */
     private Callback existCallback(Callback callback) {
-        return CALLBACKS.stream().filter(e -> e.getClassName().equals(callback.getClassName()) && e.getMethod().equals(callback.getMethod())).findFirst().get();
+        Optional<Callback> optional = CALLBACKS.stream().filter(e -> e.getClassName().equals(callback.getClassName())
+                && e.getMethod().equals(callback.getMethod())).findFirst();
+        if (optional.isPresent()) {
+            return optional.get();
+        }
+        return null;
     }
 
     /**

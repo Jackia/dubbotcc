@@ -11,6 +11,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -145,7 +146,17 @@ public class BeanServiceUtils {
             LOG.error("transBean2Map Error " + e);
         }
         return map;
+    }
 
+    /**
+     * 根据枚举类型获取Spring注册的Bean
+     *
+     * @param annotationType 枚举
+     * @return
+     */
+    public Map<String, Object> getBeanWithAnnotation(Class<? extends Annotation> annotationType) {
+        Assert.notNull(annotationType);
+        return cfgContext.getBeansWithAnnotation(annotationType);
     }
 
     /**
